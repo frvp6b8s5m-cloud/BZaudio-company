@@ -9,7 +9,7 @@ BZaudio is being built around practical audio workflows: measurement, analysis, 
 Requirements: Node.js 22 or newer and npm.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
