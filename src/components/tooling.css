@@ -1,0 +1,142 @@
+.tool-panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(143, 164, 188, 0.18);
+  border-radius: 14px;
+  background: #111923;
+}
+
+.tool-panel__header {
+  padding: 1.25rem 1.4rem 1rem;
+  border-bottom: 1px solid rgba(143, 164, 188, 0.14);
+}
+
+.tool-panel__eyebrow {
+  color: #79b9ff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.tool-panel__header h2 {
+  margin: 0.45rem 0 0.3rem;
+  color: #edf4fb;
+  font-size: 1.25rem;
+}
+
+.tool-panel__header p {
+  margin: 0;
+  color: #a5b3c2;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.tool-panel__content {
+  padding: 1.4rem;
+}
+
+.level-meter {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.level-meter__readout,
+.level-meter__scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.level-meter__label {
+  color: #dce7f2;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.level-meter__value {
+  color: #f1f6fb;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+.level-meter__track {
+  position: relative;
+  height: 0.8rem;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #273443;
+}
+
+.level-meter__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #388ce8, #66d2c4);
+}
+
+.level-meter__peak {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(12, 20, 29, 0.55);
+}
+
+.level-meter__scale {
+  color: #8fa0b1;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.spectrum-bars {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.spectrum-bars__caption {
+  color: #dce7f2;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.spectrum-bars__plot {
+  display: block;
+  width: 100%;
+  min-height: 7rem;
+  overflow: visible;
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 24%,
+    rgba(143, 164, 188, 0.12) 25%
+  );
+}
+
+.spectrum-bars__baseline {
+  stroke: rgba(143, 164, 188, 0.45);
+  stroke-width: 1;
+}
+
+.spectrum-bars__bar {
+  fill: #63b7ed;
+}
+
+.spectrum-bars__summary,
+.spectrum-bars__empty {
+  margin: 0;
+  color: #a5b3c2;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .tool-panel__header,
+  .tool-panel__content {
+    padding: 1rem;
+  }
+}
