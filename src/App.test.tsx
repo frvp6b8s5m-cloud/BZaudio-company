@@ -13,5 +13,9 @@ describe("BZaudio home page", () => {
     expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Admin$/i })).toHaveAttribute("href", "#admin");
     expect(screen.getByText(/Created by/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Open project repository/i })).toHaveAttribute(
+      "href",
+      "https://github.com/frvp6b8s5m-cloud/BZaudio-company",
+    );
   });
 });
