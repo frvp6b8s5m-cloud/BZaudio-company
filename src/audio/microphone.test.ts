@@ -44,7 +44,7 @@ describe("microphone session lifecycle", () => {
     expect(context.close).toHaveBeenCalledTimes(1);
   });
 
-  it("classifies permission denial without creating an audio context", async () => {
+  it("closes the audio context if microphone permission is denied", async () => {
     const { runtime } = makeRuntime();
     runtime.getUserMedia = vi.fn().mockRejectedValue(
       Object.assign(new Error("Permission denied"), { name: "NotAllowedError" }),
@@ -54,7 +54,7 @@ describe("microphone session lifecycle", () => {
       name: "MicrophoneStartError",
       code: "permission-denied",
     });
-    expect(runtime.createAudioContext).not.toHaveBeenCalled();
+    expect(runtime.createAudioContext).toHaveBeenCalledTimes(1);
   });
 
   it("classifies a missing input device", async () => {

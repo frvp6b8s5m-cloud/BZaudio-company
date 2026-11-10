@@ -98,8 +98,10 @@ export async function startMicrophoneSession(
   let context: AudioContext | undefined;
 
   try {
-    stream = await audioRuntime.getUserMedia({ audio: true });
+    // Construct the context before the first await so a click handler can
+    // satisfy browsers that gate Web Audio startup on user activation.
     context = audioRuntime.createAudioContext();
+    stream = await audioRuntime.getUserMedia({ audio: true });
     const source = context.createMediaStreamSource(stream);
     let stopped = false;
 
