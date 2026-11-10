@@ -10,9 +10,12 @@ describe("BZaudio home page", () => {
       screen.getByRole("heading", { name: /tools built for the show/i }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Toolbox$/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /approach/i })).toHaveAttribute("href", "#approach");
     expect(screen.getByRole("link", { name: /about/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Admin$/i })).toHaveAttribute("href", "#admin");
-    expect(screen.getByText(/Created by/i)).toBeInTheDocument();
+    expect(screen.getByText(/CREATED BY/i)).toBeInTheDocument();
+    expect(screen.getByText(/BENTLEY ZERWAS/i)).toBeInTheDocument();
+    expect(screen.getByText(/This public website does not provide private admin accounts/i)).toBeInTheDocument();
     expect(document.getElementById("home")).toBeInTheDocument();
     expect(document.getElementById("toolbox")).toBeInTheDocument();
     expect(document.getElementById("approach")).toBeInTheDocument();
