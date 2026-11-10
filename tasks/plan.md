@@ -23,8 +23,8 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - Scaffold Vite/React/TypeScript with strict type checking and a small design-token foundation.
 - Add lint, test, typecheck, and build scripts.
 - Add CI workflow for pull requests and pushes to the working branch.
-- Add and test the Pages deployment workflow, but keep public production deployment disabled while the repository remains private.
-- Run all development CI, previews, and verification while private. Do not change visibility during implementation.
+- Add and inspect the manual-only Pages deployment workflow; do not publish production while the repository is public unless separately approved.
+- Run development CI and verification on feature branches. The repository is public by explicit user authorization; no further visibility change is authorized without approval.
 - Add README, About page, navigation, and public Admin handoff page.
 
 ### Checkpoint A — Foundation review
@@ -76,7 +76,7 @@ Plan and implement the remaining 10 tools after Release 1 review; do not expand 
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Private repository cannot publish publicly to GitHub Free Pages | High | Keep repository private during development; user changes visibility at the final release stage, then verify Pages eligibility before publication |
+| GitHub Pages eligibility and repository configuration may block release | High | Verify plan eligibility and Pages settings at release time; keep production publication separately gated |
 | GitHub Pages is static-only | High | No custom user auth, database, payment, or privileged admin API; document boundary clearly |
 | Missing registered domain | Medium | Use GitHub Pages default URL initially; defer custom/admin subdomains |
 | Browser audio API differences | High | Capability detection, explicit permission states, supported-browser testing |
@@ -86,9 +86,9 @@ Plan and implement the remaining 10 tools after Release 1 review; do not expand 
 
 ## Open questions / external prerequisites
 - Registered domain and DNS provider remain unknown.
-- Repository must remain private through development. User will change it to public at the end; no automated visibility change is authorized before final release readiness.
+- Repository is public by explicit user authorization during migration; no further visibility change is authorized without approval.
 - GitHub Pages must be enabled and its deployment source configured by an authorized user if not already enabled.
 - Confirm target browser support matrix during foundation implementation; default target is current stable Chrome, Edge, Firefox, and Safari.
 
 ## Approval checkpoints
-The user has approved this architecture and plan. Keep the repository private until the final release stage. Further approval is required before: adding external services, changing domain/DNS, enabling production deployment, merging to main, or materially changing the 30-tool scope. At final release readiness, ask the user to make the repository public; verify the setting and Pages eligibility before publishing.
+The user has approved this architecture and plan. The repository is public by explicit user authorization during migration. Further approval is required before: adding external services, changing domain/DNS, enabling production deployment, merging to main, or materially changing the 30-tool scope. At final release readiness, verify the existing public setting and Pages eligibility before publishing.

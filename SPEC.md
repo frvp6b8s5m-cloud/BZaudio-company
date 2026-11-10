@@ -171,9 +171,9 @@ export function decibelsToLinearGain(decibels: number): number {
 
 ## Repository visibility and release sequence
 
-- Keep the repository private throughout development, review, and testing.
-- The user intends to change it to public only at the end, when the release candidate is ready for publication.
-- GitHub Actions CI can run while private. Public GitHub Pages publication on GitHub Free must wait until the repository is public; verify the current plan and Pages eligibility at release time.
+- `BZaudio-company` is public by explicit user authorization during the repository migration on 2026-11-10. Do not change visibility again without explicit approval.
+- Public repository visibility does not authorize production deployment. GitHub Pages publication remains gated by the manual workflow and separate release approval.
+- Verify the current plan, Pages eligibility, and repository Pages configuration at release time.
 - Do not change visibility automatically or before the final release checkpoint.
 
 ## Open questions
