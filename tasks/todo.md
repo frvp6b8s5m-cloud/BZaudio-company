@@ -73,36 +73,36 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Checkpoint A — Foundation review
 - [x] Tasks 1–6 technical foundation criteria verified.
 - [x] Technical Definition of Done checks pass; human review is the remaining approval gate.
-- [ ] Human reviews and approves the foundation before Phase 2.
+- [x] Human reviewed and approved the foundation before Phase 2 on 2026-11-10.
 
 ## Phase 2 — Shared engineering foundations
 
 ### Task 7: Typed unit and validation primitives
 **Acceptance criteria:**
-- [ ] Domain values carry explicit units.
-- [ ] Invalid, non-finite, and out-of-range inputs are handled consistently.
-- [ ] Formula helpers have known-answer and boundary tests.
-**Verification:** Unit tests.
+- [x] Domain values carry explicit units through branded TypeScript types.
+- [x] Invalid, non-finite, and out-of-range inputs are handled consistently.
+- [x] Formula helpers have known-answer and boundary tests.
+**Verification:** Vitest coverage for frequency, distance, decibels, sample rate, amplitude gain conversions, and milliseconds-to-samples boundaries. CI passed.
 **Dependencies:** Checkpoint A.
 **Files likely touched:** `src/calculations/`, `tests/unit/`.
 **Estimated scope:** Medium.
 
 ### Task 8: Browser audio lifecycle foundation
 **Acceptance criteria:**
-- [ ] Audio contexts and media streams have explicit lifecycle cleanup.
-- [ ] Permission denial, no device, and unsupported APIs show clear states.
-- [ ] No microphone capture starts without user action.
-**Verification:** Unit/integration tests plus browser permission-denial test.
+- [x] Audio contexts and media streams have explicit lifecycle cleanup.
+- [x] Permission denial, no device, and unsupported APIs show clear states.
+- [x] No microphone capture starts without user action.
+**Verification:** Vitest covers explicit start, idempotent stop, track/context cleanup, permission denial, missing devices, unsupported APIs, and cleanup after context creation failure. CI passed. Real-browser permission-denial automation remains part of browser hardening.
 **Dependencies:** Checkpoint A.
 **Files likely touched:** `src/audio/`, tests.
 **Estimated scope:** Medium.
 
 ### Task 9: Reusable visualization and tool shell
 **Acceptance criteria:**
-- [ ] Shared tool layout, meter, and chart primitives are accessible.
-- [ ] Visualizations do not rely on color alone.
-- [ ] Responsive behavior is verified.
-**Verification:** Component and browser tests.
+- [x] Shared tool layout, meter, and spectrum primitives expose accessible labels and numeric values.
+- [x] Visualizations communicate level/height and numeric summaries, not color alone.
+- [ ] Responsive behavior is verified at real browser viewport sizes.
+**Verification:** Component tests pass and responsive CSS includes a narrow-screen breakpoint. Real-browser viewport automation is not configured yet; adding Playwright requires approval because it adds a development dependency and CI browser setup.
 **Dependencies:** Tasks 7–8.
 **Files likely touched:** `src/components/`, `src/features/shared/`.
 **Estimated scope:** Medium.

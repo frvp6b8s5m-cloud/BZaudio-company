@@ -34,19 +34,21 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - [x] No secrets or privileged tokens are present in the reviewed project files; CI uses read-only permissions.
 - [x] Manual Pages workflow and artifact-upload path are reviewed and preflighted without publishing; Pages site settings and live deployment are deferred to release approval.
 - [x] Repository visibility matches the user's explicit public-repository decision; production deployment remains disabled.
-- [ ] Human reviews and approves the foundation before audio engine implementation.
+- [x] Human reviewed and approved the foundation before audio engine implementation on 2026-11-10.
 
 ### Phase 2 — Shared engineering foundations
-- Implement typed unit helpers, validation, and formula conventions.
-- Implement audio capability detection, permission/error states, and safe audio lifecycle management.
-- Implement reusable meter, spectrum, waveform, and tool-shell components with accessible interactions.
-- Add tests for shared primitives.
+- [x] Implement branded typed unit helpers, finite/range validation, amplitude decibel conversions, and sample-count conversion.
+- [x] Implement explicit microphone session startup, capability detection, stable permission/device error states, and idempotent cleanup of media tracks and audio context.
+- [x] Implement reusable tool panel, accessible level meter, and spectrum visualization primitives.
+- [x] Add deterministic unit and component tests for shared primitives.
+- [ ] Verify responsive behavior in a real browser at desktop, tablet, and mobile viewport sizes. Responsive CSS breakpoints are present and reviewed; browser automation is not configured.
 
 ### Checkpoint B — Engineering foundation review
-- [ ] Formula and audio primitives have deterministic tests.
-- [ ] Browser capability and permission failures are handled.
-- [ ] Visual components are accessible and responsive.
-- [ ] Human reviews before completing tool batches.
+- [x] Formula and audio primitives have deterministic tests.
+- [x] Browser capability and permission failures are handled.
+- [ ] Visual components are accessible and responsive in real-browser viewport testing; component semantics and responsive CSS are implemented, browser viewport automation remains open.
+- [ ] Human reviews the shared foundations before completing tool batches.
+- **Pending approval:** Add Playwright as a development dependency and configure a browser CI job to close the viewport-verification item. No dependency or CI expansion has been made without approval.
 
 ### Phase 3 — Release 1 tool slices
 Implement in testable batches:
