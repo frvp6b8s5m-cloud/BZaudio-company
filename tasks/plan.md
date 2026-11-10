@@ -1,7 +1,7 @@
 # Implementation Plan: BZaudio GitHub-only Release 1
 
 ## Status
-Architecture and implementation plan approved by the user on 2026-11-10. Implementation proceeds only on `chore/github-only-foundation`. No merge to `main` or production deployment without a separate approval.
+Architecture and implementation plan approved by the user on 2026-11-10. The project was migrated to `BZaudio-company`, which the user explicitly authorized to make public on 2026-11-10. Use short-lived feature branches for follow-up changes. No merge to `main` or production deployment without separate approval.
 
 ## Overview
 Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, browser audio APIs, GitHub Pages, and GitHub Actions. Work is organized into small vertical slices with explicit checkpoints.
@@ -33,7 +33,7 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - [ ] CI workflow is valid and runs.
 - [ ] No secrets or privileged tokens are present.
 - [ ] GitHub Pages workflow and configuration are validated without publishing publicly.
-- [ ] Repository remains private through foundation review.
+- [x] Repository visibility matches the user's explicit public-repository decision; production deployment remains disabled.
 - [ ] Human reviews foundation before audio engine implementation.
 
 ### Phase 2 — Shared engineering foundations

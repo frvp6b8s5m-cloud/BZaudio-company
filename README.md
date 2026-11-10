@@ -2,7 +2,7 @@
 
 A browser-based toolbox for live-sound professionals, system technicians, students, and audio enthusiasts.
 
-BZaudio is being built around practical audio workflows: measurement, analysis, signal generation, and system-design calculations. The project is currently in private development.
+BZaudio is being built around practical audio workflows: measurement, analysis, signal generation, and system-design calculations. The source repository is public; the production website has not been deployed.
 
 ## Development setup
 
@@ -37,7 +37,7 @@ See [SPEC.md](./SPEC.md), [the implementation plan](./tasks/plan.md), and [ADR-0
 
 Project administration is controlled through GitHub repository permissions and approved workflows. The public site will not claim to provide a private admin dashboard.
 
-The GitHub Pages release workflow is manual-only. Its deploy job is additionally blocked unless the repository is public, the selected ref is `main`, and the dispatch input explicitly authorizes publication. Keep the repository private during development; this workflow does not change repository visibility. Production publication still requires the project's release approval.
+The GitHub Pages release workflow is manual-only. Its deploy job is additionally blocked unless the repository is public, the selected ref is `main`, and the dispatch input explicitly authorizes publication. The repository is public by explicit user authorization; this workflow does not change repository visibility. Production publication still requires the project's release approval.
 
 ## About
 

@@ -8,8 +8,7 @@
 
 ## Approval gates
 - Do not expand product scope, add external services, add authentication, add payment processing, change repository visibility, change DNS, or deploy without the required explicit approval.
-- **Keep the repository private throughout development. The user intends to make it public at the end, for final publication. Do not change visibility earlier.**
-- The user has authorized a public-at-release approach, not an immediate visibility change. Confirm readiness and obtain final release approval before the user changes visibility.
+- The user explicitly authorized making `BZaudio-company` public during the repository migration on 2026-11-10. The repository is public; do not change visibility again without explicit approval.
 - Do not merge to `main` or publish a production release without explicit user approval.
 - Pause at the checkpoints in `tasks/plan.md` and obtain review before crossing them.
 
