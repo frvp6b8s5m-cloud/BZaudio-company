@@ -59,7 +59,7 @@ export function LevelMeter({
       </div>
       <div className="level-meter__scale">
         <span>{minDbfs} dBFS</span>
-        {peakPercentage !== undefined && Number.isFinite(peakDbfs) && (
+        {peakPercentage !== undefined && peakDbfs !== undefined && Number.isFinite(peakDbfs) && (
           <span className="level-meter__peak-readout">
             Peak {peakDbfs.toFixed(1)} dBFS
           </span>
