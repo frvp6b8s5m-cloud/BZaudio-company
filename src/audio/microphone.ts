@@ -64,7 +64,9 @@ function createBrowserAudioRuntime(): AudioRuntime {
       ? undefined
       : (window as Window & { webkitAudioContext?: typeof AudioContext });
   const AudioContextConstructor =
-    audioWindow?.AudioContext ?? audioWindow?.webkitAudioContext;
+    typeof AudioContext === "undefined"
+      ? audioWindow?.webkitAudioContext
+      : AudioContext;
 
   if (
     typeof navigator === "undefined" ||
