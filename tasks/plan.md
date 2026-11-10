@@ -41,14 +41,14 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - [x] Implement explicit microphone session startup, capability detection, stable permission/device error states, and idempotent cleanup of media tracks and audio context.
 - [x] Implement reusable tool panel, accessible level meter, and spectrum visualization primitives.
 - [x] Add deterministic unit and component tests for shared primitives.
-- [ ] Verify responsive behavior in a real browser at desktop, tablet, and mobile viewport sizes. Responsive CSS breakpoints are present and reviewed; browser automation is not configured.
+- [x] Verify responsive behavior in Chromium at desktop (1440px), tablet (768px), mobile (390px), and minimum supported mobile (320px) viewport sizes using Playwright.
 
 ### Checkpoint B — Engineering foundation review
 - [x] Formula and audio primitives have deterministic tests.
 - [x] Browser capability and permission failures are handled.
-- [ ] Visual components are accessible and responsive in real-browser viewport testing; component semantics and responsive CSS are implemented, browser viewport automation remains open.
+- [x] Visual components expose accessible semantics and numeric values; responsive behavior passes Playwright Chromium viewport tests.
 - [ ] Human reviews the shared foundations before completing tool batches.
-- **Pending approval:** Add Playwright as a development dependency and configure a browser CI job to close the viewport-verification item. No dependency or CI expansion has been made without approval.
+- Playwright is approved and installed as a development dependency. CI installs Chromium and runs the responsive browser suite. Browser-level microphone permission-denial testing remains deferred until a microphone UI is integrated.
 
 ### Phase 3 — Release 1 tool slices
 Implement in testable batches:

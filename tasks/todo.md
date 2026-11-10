@@ -101,15 +101,15 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 **Acceptance criteria:**
 - [x] Shared tool layout, meter, and spectrum primitives expose accessible labels and numeric values.
 - [x] Visualizations communicate level/height and numeric summaries, not color alone.
-- [ ] Responsive behavior is verified at real browser viewport sizes.
-**Verification:** Component tests pass and responsive CSS includes a narrow-screen breakpoint. Real-browser viewport automation is not configured yet; adding Playwright requires approval because it adds a development dependency and CI browser setup.
+- [x] Responsive behavior is verified in Chromium at desktop (1440px), tablet (768px), mobile (390px), and minimum supported mobile (320px) viewports.
+**Verification:** Vitest component tests and Playwright Chromium viewport/navigation tests pass in CI. Playwright reports and traces are retained on failure. Real-browser microphone permission-denial testing is deferred until a microphone control is integrated into the app.
 **Dependencies:** Tasks 7–8.
 **Files likely touched:** `src/components/`, `src/features/shared/`.
 **Estimated scope:** Medium.
 
 ### Checkpoint B — Engineering review
-- [ ] Tasks 7–9 verified.
-- [ ] Human reviews shared foundations before tool batches.
+- [x] Tasks 7–9 technical acceptance criteria verified; browser-level microphone permission denial remains a later integration check when a microphone UI exists.
+- [ ] Human reviews and approves shared foundations before tool batches.
 
 ## Phase 3 — Release 1 tools
 
