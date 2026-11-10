@@ -17,13 +17,15 @@ describe("typed audio units", () => {
     expect(createSampleRateHz(48000)).toBe(48000);
   });
 
-  it.each([
+  const invalidUnits: Array<[string, () => unknown]> = [
     ["frequency", () => createFrequencyHz(0)],
     ["distance", () => createDistanceMeters(-1)],
     ["decibels", () => createDecibels(Number.NaN)],
     ["sample rate", () => createSampleRateHz(44100.5)],
     ["infinite sample rate", () => createSampleRateHz(Number.POSITIVE_INFINITY)],
-  ])("rejects invalid %s values", (_label, createValue) => {
+  ];
+
+  it.each(invalidUnits)("rejects invalid %s values", (_label, createValue) => {
     expect(createValue).toThrow(RangeError);
   });
 });
