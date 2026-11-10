@@ -68,8 +68,8 @@ describe("microphone session lifecycle", () => {
     });
   });
 
-  it("stops acquired tracks if audio context creation fails", async () => {
-    const { runtime, track } = makeRuntime();
+  it("does not request the microphone if audio context creation fails", async () => {
+    const { runtime } = makeRuntime();
     runtime.createAudioContext = vi.fn(() => {
       throw new Error("Audio context unavailable");
     });
@@ -77,7 +77,20 @@ describe("microphone session lifecycle", () => {
     await expect(startMicrophoneSession(runtime)).rejects.toBeInstanceOf(
       MicrophoneStartError,
     );
+    expect(runtime.getUserMedia).not.toHaveBeenCalled();
+  });
+
+  it("stops acquired tracks if the audio source cannot be created", async () => {
+    const { runtime, track, context } = makeRuntime();
+    context.createMediaStreamSource = vi.fn(() => {
+      throw new Error("Audio source unavailable");
+    });
+
+    await expect(startMicrophoneSession(runtime)).rejects.toBeInstanceOf(
+      MicrophoneStartError,
+    );
     expect(track.stop).toHaveBeenCalledTimes(1);
+    expect(context.close).toHaveBeenCalledTimes(1);
   });
 
   it("reports unsupported browser audio APIs clearly", async () => {
