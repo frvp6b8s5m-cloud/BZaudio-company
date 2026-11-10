@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - chore/reconcile-public-repo-docs
+    paths:
+      - .github/workflows/generate-lockfile.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   lockfile:
@@ -23,10 +25,10 @@ jobs:
       - name: Generate lockfile without running package scripts
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
-      - name: Upload lockfile artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: bzaudio-package-lock
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit generated lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: add reproducible npm lockfile"
+          git push origin HEAD
