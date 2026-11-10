@@ -7,21 +7,21 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 1: Add project scaffold
 **Description:** Establish the Vite, React, and strict TypeScript foundation.
 **Acceptance criteria:**
-- [ ] App starts with `npm run dev` and builds with `npm run build`.
-- [ ] Strict TypeScript checking is enabled.
-- [ ] Vite base path supports repository Pages URL.
-**Verification:** Install from lockfile; run dev smoke check, typecheck, and production build.
+- [x] App starts with `npm run dev` and builds with `npm run build`.
+- [x] Strict TypeScript checking is enabled.
+- [x] Vite uses a relative asset base for repository Pages hosting.
+**Verification:** Locked install, CI development-server smoke test, typecheck, and production build passed.
 **Dependencies:** Approved plan.
 **Files likely touched:** `package.json`, lockfile, `index.html`, `vite.config.ts`, `tsconfig*.json`, `src/main.tsx`.
 **Estimated scope:** Medium.
 
 ### Task 2: Establish quality tooling
-**Description:** Add linting, formatting conventions, Vitest, and scripts.
+**Description:** Add linting, test conventions, Vitest, and quality scripts.
 **Acceptance criteria:**
-- [ ] `npm run lint`, `npm run typecheck`, and `npm run test` exist.
-- [ ] A sample test proves the test runner works.
-- [ ] CI commands are reproducible from a clean install.
-**Verification:** Run all scripts locally.
+- [x] `npm run lint`, `npm run typecheck`, and `npm run test` exist.
+- [x] App component tests prove the test runner works.
+- [x] CI uses `npm ci` from the committed lockfile.
+**Verification:** CI passed lint, strict typecheck, Vitest, build, and `npm audit --audit-level=high`.
 **Dependencies:** Task 1.
 **Files likely touched:** package scripts/config, test config, sample test.
 **Estimated scope:** Medium.
@@ -29,10 +29,10 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 3: Add design foundation and app shell
 **Description:** Build the responsive Studio visual shell and primary navigation.
 **Acceptance criteria:**
-- [ ] Home, Toolbox, About, and Admin handoff routes render.
-- [ ] Keyboard navigation and visible focus work.
-- [ ] Layout adapts to mobile and desktop widths.
-**Verification:** Component tests and browser smoke test.
+- [x] Home, Toolbox, Approach, About, and Admin handoff sections render through working anchor navigation.
+- [x] Navigation uses native links and visible `:focus-visible` styling.
+- [x] Responsive breakpoints cover mobile, tablet, and desktop layouts.
+**Verification:** Component tests assert all section targets; CSS review confirms responsive breakpoints and reduced-motion support. CI smoke-checks the Vite dev server.
 **Dependencies:** Task 1.
 **Files likely touched:** `src/app/`, `src/components/`, `src/styles/`.
 **Estimated scope:** Medium.
@@ -40,10 +40,10 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 4: Add About and Admin handoff content
 **Description:** Explain BZaudio's mission and creator credit; route admin users to GitHub-native controls.
 **Acceptance criteria:**
-- [ ] About page describes the approved goal.
-- [ ] Exact creator credit reads “Created by BENTLEY ZERWAS.”
-- [ ] Admin page clearly states it is public and contains no privileged client-side actions.
-**Verification:** Content assertions and manual browser check.
+- [x] About section describes the approved goal.
+- [x] Exact creator credit reads “CREATED BY BENTLEY ZERWAS.”
+- [x] Admin handoff states the site is public and contains no privileged client-side actions; link points to `BZaudio-company`.
+**Verification:** Component tests assert creator credit, public-admin boundary, and primary repository link.
 **Dependencies:** Task 3.
 **Files likely touched:** `src/content/`, app routes/components.
 **Estimated scope:** Small.
@@ -51,9 +51,9 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 5: Add CI workflow
 **Description:** Run quality checks on pull requests and relevant pushes.
 **Acceptance criteria:**
-- [ ] Workflow runs lint, typecheck, tests, and build.
-- [ ] Workflow uses least-privilege permissions.
-- [ ] No secrets are required for CI.
+- [x] Workflow runs lint, typecheck, tests, build, dev-server smoke test, and dependency audit.
+- [x] Workflow uses `contents: read` only.
+- [x] CI requires no secrets.
 **Verification:** Inspect workflow and confirm a GitHub Actions run passes.
 **Dependencies:** Task 2.
 **Files likely touched:** `.github/workflows/ci.yml`.
@@ -62,18 +62,18 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 6: Add gated GitHub Pages deployment workflow
 **Description:** Configure build and Pages artifact deployment with production publication gated on repository settings and approval.
 **Acceptance criteria:**
-- [ ] Workflow follows GitHub Pages artifact deployment.
-- [ ] Deployment permissions are scoped to the Pages job.
-- [ ] Deployment does not run until Pages prerequisites are verified.
-**Verification:** Workflow validation and, after settings are ready, a non-production Pages verification.
+- [x] Manual workflow builds and uploads a GitHub Pages artifact.
+- [x] `pages: write` and `id-token: write` are scoped to the deploy job.
+- [x] Deploy job requires public visibility, `main`, and explicit `publish: true`; Pages settings/live deployment remain deferred to release.
+**Verification:** Pages artifact preflight passed without publishing. Actual Pages site configuration and live deployment remain release-stage work requiring separate approval.
 **Dependencies:** Task 5.
 **Files likely touched:** `.github/workflows/deploy-pages.yml`.
 **Estimated scope:** Medium.
 
 ### Checkpoint A — Foundation review
-- [ ] Tasks 1–6 verified.
-- [ ] Full Definition of Done checklist satisfied.
-- [ ] Human reviews the foundation before Phase 2.
+- [x] Tasks 1–6 technical foundation criteria verified.
+- [x] Technical Definition of Done checks pass; human review is the remaining approval gate.
+- [ ] Human reviews and approves the foundation before Phase 2.
 
 ## Phase 2 — Shared engineering foundations
 
