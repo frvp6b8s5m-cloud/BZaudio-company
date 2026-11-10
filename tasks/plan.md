@@ -28,13 +28,13 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - Add README, About page, navigation, and public Admin handoff page.
 
 ### Checkpoint A — Foundation review
-- [ ] Local development starts.
-- [ ] Lint, typecheck, tests, and build pass.
-- [ ] CI workflow is valid and runs.
-- [ ] No secrets or privileged tokens are present.
-- [ ] GitHub Pages workflow and configuration are validated without publishing publicly.
+- [x] Local development server starts and responds to the CI smoke test.
+- [x] Lint, typecheck, tests, and build pass using `npm ci`.
+- [x] CI workflow runs successfully, including dependency audit and dev-server smoke test.
+- [x] No secrets or privileged tokens are present in the reviewed project files; CI uses read-only permissions.
+- [x] Manual Pages workflow and artifact-upload path are reviewed and preflighted without publishing; Pages site settings and live deployment are deferred to release approval.
 - [x] Repository visibility matches the user's explicit public-repository decision; production deployment remains disabled.
-- [ ] Human reviews foundation before audio engine implementation.
+- [ ] Human reviews and approves the foundation before audio engine implementation.
 
 ### Phase 2 — Shared engineering foundations
 - Implement typed unit helpers, validation, and formula conventions.
