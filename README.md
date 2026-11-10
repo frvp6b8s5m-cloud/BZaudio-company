@@ -1,46 +1,52 @@
 # BZaudio
 
-A browser-based toolbox for live-sound professionals, system technicians, students, and audio enthusiasts.
+A Studio-style live-sound engineering toolbox for practical analysis, system design, signal generation, and audio utilities.
 
-BZaudio is being built around practical audio workflows: measurement, analysis, signal generation, and system-design calculations. The source repository is public; the production website has not been deployed.
+## Development
 
-## Development setup
-
-Requirements: Node.js 22 or newer and npm.
+Requirements: Node.js 22 and npm.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-## Quality commands
+## Quality checks
 
-| Command | Purpose |
-| --- | --- |
-| `npm run lint` | Check source quality |
-| `npm run typecheck` | Run strict TypeScript checks |
-| `npm test` | Run the Vitest suite |
-| `npm run build` | Type-check and create a production build |
-| `npm run preview` | Preview the production build |
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+## Browser tests
+
+The responsive end-to-end suite uses Playwright with Chromium.
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+The browser suite checks desktop, tablet, mobile, and minimum-width mobile layouts, including horizontal overflow and primary navigation. CI installs Chromium and runs these checks on every push and pull request.
 
 ## Architecture
 
-- React + TypeScript + Vite for the static frontend.
-- Web Audio API and custom DSP for browser-side audio tools.
-- GitHub Actions for continuous integration and deployment automation.
-- GitHub Pages for the eventual public static site.
-- No server-side customer accounts, payment processing, database, or privileged admin API in the GitHub-only release.
-
-See [SPEC.md](./SPEC.md), [the implementation plan](./tasks/plan.md), and [ADR-0001](./docs/decisions/0001-github-pages-static-architecture.md) for the product and architecture decisions.
+- React + TypeScript + Vite static frontend.
+- Browser Web Audio API for audio features; no server-side audio processing.
+- Deterministic calculation and DSP primitives are kept independently testable.
+- GitHub Actions runs lint, type checks, unit tests, browser tests, production build, server smoke test, and dependency audit.
+- GitHub Pages production publication is manual and separately gated; no production deployment is performed by ordinary CI.
 
 ## Project administration
 
-Project administration is controlled through GitHub repository permissions and approved workflows. The public site will not claim to provide a private admin dashboard.
-
-The GitHub Pages release workflow is manual-only. Its deploy job is additionally blocked unless the repository is public, the selected ref is `main`, and the dispatch input explicitly authorizes publication. The repository is public by explicit user authorization; this workflow does not change repository visibility. Production publication still requires the project's release approval.
+The public Admin section is a handoff to GitHub-native repository controls. It is not a private admin portal and contains no privileged client-side actions.
 
 ## About
 
-BZaudio's goal is to make practical professional audio engineering and live-sound tools more accessible and useful.
+Created by **BENTLEY ZERWAS**.
 
-**Created by BENTLEY ZERWAS.**
+## Audio measurement limitations
+
+Browser microphone readings depend on the connected hardware, browser processing, and calibration. BZaudio does not label uncalibrated microphone estimates as calibrated SPL measurements.
