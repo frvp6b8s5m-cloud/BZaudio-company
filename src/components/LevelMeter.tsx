@@ -1,3 +1,5 @@
+import "./tooling.css";
+
 interface LevelMeterProps {
   label: string;
   valueDbfs: number;
@@ -55,8 +57,13 @@ export function LevelMeter({
           />
         )}
       </div>
-      <div className="level-meter__scale" aria-hidden="true">
+      <div className="level-meter__scale">
         <span>{minDbfs} dBFS</span>
+        {peakPercentage !== undefined && Number.isFinite(peakDbfs) && (
+          <span className="level-meter__peak-readout">
+            Peak {peakDbfs.toFixed(1)} dBFS
+          </span>
+        )}
         <span>{maxDbfs} dBFS</span>
       </div>
     </div>

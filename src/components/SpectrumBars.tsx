@@ -1,3 +1,5 @@
+import "./tooling.css";
+
 interface SpectrumBarsProps {
   label: string;
   bins: readonly number[];
@@ -19,7 +21,7 @@ export function SpectrumBars({ label, bins }: SpectrumBarsProps) {
     );
   }
 
-  const peak = Math.max(...values);
+  const peak = values.reduce((highest, value) => Math.max(highest, value), 0);
   const slotWidth = 240 / values.length;
   const barWidth = Math.max(1, slotWidth - 3);
 

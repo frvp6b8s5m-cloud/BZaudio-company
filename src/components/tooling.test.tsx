@@ -25,6 +25,7 @@ describe("shared tool components", () => {
     expect(meter).toHaveAttribute("aria-valuemax", "0");
     expect(meter).toHaveAttribute("aria-valuenow", "-12.3");
     expect(screen.getByText("-12.3 dBFS")).toBeInTheDocument();
+    expect(screen.getByText("Peak -3.0 dBFS")).toBeInTheDocument();
   });
 
   it("shows a no-signal state for non-finite meter readings", () => {

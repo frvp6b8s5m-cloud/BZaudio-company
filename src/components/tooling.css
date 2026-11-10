@@ -140,3 +140,8 @@
     padding: 1rem;
   }
 }
+
+.level-meter__peak-readout {
+  color: #dce7f2;
+  font-weight: 600;
+}

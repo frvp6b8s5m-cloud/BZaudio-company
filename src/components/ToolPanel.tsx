@@ -1,5 +1,4 @@
 import { useId, type ReactNode } from "react";
-import "./tooling.css";
 
 interface ToolPanelProps {
   title: string;
