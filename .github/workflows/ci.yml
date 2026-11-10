@@ -44,5 +44,19 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Development server smoke test
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/bzaudio-vite.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bzaudio-vite.log
+          exit 1
+
       - name: Dependency security audit
         run: npm audit --audit-level=high
