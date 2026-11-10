@@ -222,7 +222,7 @@ export default function App() {
               accounts or privileged controls.
             </p>
           </div>
-          <a className="text-link" href="https://github.com/frvp6b8s5m-cloud/BZaudio-the-final-rendition-">
+          <a className="text-link" href="https://github.com/frvp6b8s5m-cloud/BZaudio-company">
             Open project repository <ArrowUpRight size={16} />
           </a>
         </section>
