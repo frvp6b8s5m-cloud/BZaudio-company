@@ -14,7 +14,16 @@ The current toolbox includes seven working calculators:
 - Decibel conversion (amplitude and power ratios)
 - Gain and voltage (voltage-ratio calculations)
 
-Each calculator updates as inputs change and shows units, formulas, and relevant assumptions. The remaining Release 1 tools are still in development.
+Each calculator updates as inputs change and shows units, formulas, and relevant assumptions.
+
+The current signal-generation tools are:
+
+- Signal generator (sine, square, sawtooth, triangle)
+- Pink noise and white noise generators
+- Logarithmic frequency sweep
+- Audio test tones (100 Hz, 1 kHz, 10 kHz)
+
+Generators start only after an explicit user action, default to -20 dBFS, provide Stop controls, and allow only one generator to play at a time. Start with downstream PA/headphone gain low. The remaining Release 1 tools are still in development.
 
 ## Development
 

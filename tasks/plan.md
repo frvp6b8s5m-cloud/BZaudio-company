@@ -60,7 +60,7 @@ Implement in testable batches:
   - SPL/distance uses the free-field inverse-square approximation and excludes room reflections, directivity, compression, and atmospheric absorption.
   - Decibel conversions explicitly distinguish amplitude (20 log10) and power (10 log10) ratios.
   - Voltage gain uses 20 log10(Vout/Vin); it does not imply a specific amplifier load or power.
-- Batch 2: signal/noise/test generators.
+- [x] Batch 2: signal/noise/test generators (CI verified on 2026-11-11).
   - Signal generator uses Web Audio oscillators (sine, square, sawtooth, triangle) with a 20 Hz–20 kHz range and adjustable output level.
   - Pink and white noise use short in-memory audio buffers with looping playback; no file upload or network request.
   - Frequency sweep uses a sine oscillator with a logarithmic frequency ramp and bounded duration.

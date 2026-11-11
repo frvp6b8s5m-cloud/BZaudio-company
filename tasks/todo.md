@@ -159,35 +159,35 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 - **Verification:** 2× voltage, 0 dB, and inverse calculation tests.
 
 ### Task 11: Signal and noise generators
-**Acceptance criteria:** Five generator tools produce controllable output, default to a conservative level, start only after user action, and release audio resources cleanly.
-**Verification:** Deterministic DSP tests, mocked audio-graph lifecycle tests, and Chromium start/stop browser checks.
+**Acceptance criteria:** [x] Five generator tools produce controllable output, default to a conservative level, start only after user action, serialize playback to one active output, and release audio resources cleanly.
+**Verification:** CI run 42930623174 passed lint, strict typecheck, 57 unit/component tests across 8 files, 7 Chromium browser tests, production build, dev-server smoke test, and npm audit.
 **Dependencies:** Task 8.
 **Files likely touched:** `src/audio/`, `src/features/generators/`, tests.
 **Estimated scope:** Five small vertical slices.
 
 #### Task 11.1: Signal generator
-- [ ] Sine, square, sawtooth, and triangle waveforms.
+- [x] Sine, square, sawtooth, and triangle waveforms.
 - [ ] Frequency input 20 Hz–20 kHz and output level -60 to 0 dBFS.
 - [ ] Explicit Start/Stop controls and lifecycle cleanup.
-- **Verification:** Mocked oscillator type/frequency/gain and cleanup tests.
+- **Verification:** 8 audio-engine tests, 5 generator UI tests, and a real Chromium signal start/stop test. Shared playback controller prevents two generators from running simultaneously.
 
 #### Task 11.2: Pink noise generator
-- [ ] Generate bounded pink-noise buffer and loop during playback.
+- [x] Generate bounded pink-noise buffer and loop during playback.
 - [ ] Conservative -20 dBFS default and explicit stop.
 - **Verification:** Deterministic sample tests and looping buffer-source tests.
 
 #### Task 11.3: White noise generator
-- [ ] Generate bounded white-noise buffer and loop during playback.
+- [x] Generate bounded white-noise buffer and loop during playback.
 - [ ] Conservative -20 dBFS default and explicit stop.
 - **Verification:** Deterministic sample tests and looping buffer-source tests.
 
 #### Task 11.4: Frequency sweep
-- [ ] Sine sweep from configurable start to end frequency over a bounded duration.
+- [x] Sine sweep from configurable start to end frequency over a bounded duration.
 - [ ] Use a logarithmic frequency ramp and stop/close automatically at the end.
 - **Verification:** Ramp scheduling and cleanup tests.
 
 #### Task 11.5: Audio test tone generator
-- [ ] Presets at 100 Hz, 1 kHz, and 10 kHz.
+- [x] Presets at 100 Hz, 1 kHz, and 10 kHz.
 - [ ] Default 1 kHz at -20 dBFS; adjustable level from -60 to 0 dBFS.
 - [ ] Explicit start/stop; warn users to begin with downstream gain low.
 - **Verification:** Preset mapping, gain, and browser playback control tests.
