@@ -116,6 +116,7 @@ function SignalTrace() {
 export default function App() {
   return (
     <div className="site-shell">
+      <a className="skip-link" href="#home">Skip to main content</a>
       <header className="site-header">
         <a className="brand" href="#home" aria-label="BZaudio home">
           <span className="brand-mark"><AudioLines size={22} strokeWidth={2.2} /></span>

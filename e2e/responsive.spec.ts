@@ -83,7 +83,8 @@ test("signal generator starts and stops in the browser", async ({ page }) => {
 });
 
 
-test("live analyzer starts and stops with a granted fake microphone", async ({ page }) => {
+test("live analyzer starts and stops with a granted fake microphone", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "The fake microphone device is configured for Chromium.");
   await page.context().grantPermissions(["microphone"]);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/#toolbox");
@@ -130,4 +131,66 @@ test("loads a local WAV file into native browser playback controls", async ({ pa
   await expect(page.getByText("reference.wav")).toBeVisible();
   await expect(page.getByLabel("Audio playback")).toHaveAttribute("controls");
   await expect(page.getByText("DURATION 0:01")).toBeVisible({ timeout: 5_000 });
+});
+
+
+test("supports skip navigation and accessible control names", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#home$/);
+
+  const audit = await page.evaluate(() => {
+    const controls = Array.from(
+      document.querySelectorAll<HTMLElement>("a, button, input, select, textarea, audio[controls]"),
+    );
+    const unnamed = controls
+      .filter((element) => {
+        const labelledBy = element.getAttribute("aria-labelledby");
+        const labelledByText = labelledBy
+          ? labelledBy.split(/\s+/).map((id) => document.getElementById(id)?.textContent ?? "").join(" ").trim()
+          : "";
+        const labels = "labels" in element
+          ? Array.from((element as HTMLInputElement).labels ?? []).map((label) => label.textContent ?? "").join(" ").trim()
+          : "";
+        return !(
+          element.getAttribute("aria-label")?.trim() ||
+          labelledByText ||
+          labels ||
+          element.getAttribute("title")?.trim() ||
+          element.textContent?.trim()
+        );
+      })
+      .map((element) => element.outerHTML.slice(0, 160));
+    const ids = Array.from(document.querySelectorAll("[id]")).map((element) => element.id);
+    const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+    return {
+      unnamed,
+      duplicateIds: [...new Set(duplicateIds)],
+      h1Count: document.querySelectorAll("h1").length,
+      hasMain: Boolean(document.querySelector("main")),
+      hasNavigation: Boolean(document.querySelector('nav[aria-label="Main navigation"]')),
+    };
+  });
+
+  expect(audit.unnamed).toEqual([]);
+  expect(audit.duplicateIds).toEqual([]);
+  expect(audit.h1Count).toBe(1);
+  expect(audit.hasMain).toBe(true);
+  expect(audit.hasNavigation).toBe(true);
+});
+
+test("loads application assets under the restrictive static content policy", async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /Tools built for the show/ })).toBeVisible();
+  const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+  expect(policy).toContain("default-src 'self'");
+  expect(policy).toContain("object-src 'none'");
+  expect(policy).toContain("media-src 'self' blob:");
+  expect(pageErrors).toEqual([]);
 });

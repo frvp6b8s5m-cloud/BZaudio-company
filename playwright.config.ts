@@ -24,6 +24,14 @@ export default defineConfig({
         },
       },
     },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
   webServer: {
     command: "npm run dev -- --host 127.0.0.1 --port 4173",

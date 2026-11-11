@@ -33,7 +33,7 @@ Generators start only after an explicit user action, default to -20 dBFS, provid
 - LUFS loudness meter (mono BS.1770-5 integrated loudness with gating)
 - Phase/polarity analyzer (stereo channel correlation and phase difference at the dominant frequency)
 
-Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. Feedback candidates are not proof of acoustic feedback. The LUFS meter implements mono integrated loudness only; it does not report true peak (dBTP) or stereo channel weighting. Phase/polarity comparison requires a two-channel input; it compares channel A with channel B and is not a substitute for acoustic loudspeaker alignment. The remaining Release 1 tools are still in development.
+Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. Feedback candidates are not proof of acoustic feedback. The LUFS meter implements mono integrated loudness only; it does not report true peak (dBTP) or stereo channel weighting. Phase/polarity comparison requires a two-channel input; it compares channel A with channel B and is not a substitute for acoustic loudspeaker alignment. All 20 approved Release 1 tools are now implemented in the review branch, including the local audio file player. Release 2 remains planned, not yet implemented.
 
 ## Development
 
@@ -55,14 +55,14 @@ npm run build
 
 ## Browser tests
 
-The responsive end-to-end suite uses Playwright with Chromium.
+The end-to-end suite uses Playwright with Chromium, Firefox, and WebKit. The fake-microphone permission workflow runs in Chromium; browser-neutral navigation, calculator, generator, file playback, and accessibility checks run across all three engines.
 
 ```bash
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 npm run test:e2e
 ```
 
-The browser suite checks desktop, tablet, mobile, and minimum-width mobile layouts, including horizontal overflow and primary navigation. CI installs Chromium and runs these checks on every push and pull request.
+The browser suite checks desktop, tablet, mobile, and minimum-width mobile layouts, including horizontal overflow and primary navigation. CI installs all three browser engines and runs these checks on every push and pull request.
 
 ## Architecture
 
@@ -70,6 +70,7 @@ The browser suite checks desktop, tablet, mobile, and minimum-width mobile layou
 - Browser Web Audio API for audio features; no server-side audio processing.
 - Deterministic calculation and DSP primitives are kept independently testable.
 - GitHub Actions runs lint, type checks, unit tests, browser tests, production build, server smoke test, and dependency audit.
+- Static HTML includes a restrictive Content Security Policy and strict referrer policy; all app assets are same-origin and local audio playback uses temporary blob URLs.
 - GitHub Pages production publication is manual and separately gated; no production deployment is performed by ordinary CI.
 
 ## Project administration
