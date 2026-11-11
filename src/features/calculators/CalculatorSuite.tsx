@@ -182,7 +182,7 @@ function CrossoverCalculator() {
       <Result
         label="Suggested starting frequency"
         value={result?.hasOverlap ? `${format(result.suggestedFrequencyHz)} Hz` : result ? "No overlap" : null}
-        detail={result?.hasOverlap ? `Shared range: ${result.overlapLowerHz}–${result.overlapUpperHz} Hz` : undefined}
+        detail={result ? (result.hasOverlap ? `Shared range: ${result.overlapLowerHz}–${result.overlapUpperHz} Hz` : "No overlap between the entered operating limits.") : undefined}
       />
       <p className="calculator-formula">fₓ = √(subwoofer upper limit × main lower limit)</p>
       <p className="calculator-caution">A starting point only. Confirm manufacturer limits, filter slopes, phase, and measured acoustic response.</p>

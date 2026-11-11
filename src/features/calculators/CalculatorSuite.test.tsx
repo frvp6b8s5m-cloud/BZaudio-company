@@ -1,8 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach } from "vitest";
 import { describe, expect, it } from "vitest";
 import { CalculatorSuite } from "./CalculatorSuite";
 
 describe("Release 1 engineering calculators", () => {
+  afterEach(() => cleanup());
   it("renders all seven calculator tools with labelled inputs", () => {
     render(<CalculatorSuite />);
 

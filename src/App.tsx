@@ -16,21 +16,21 @@ const toolGroups = [
     number: "01",
     title: "Analyze",
     description: "See what your system is doing, from spectrum and level to phase and feedback.",
-    tools: "RTA · FFT · LUFS · Peak / RMS",
+    tools: "RTA · FFT · LUFS · Peak / RMS",\n    status: "IN DEVELOPMENT",
   },
   {
     icon: RadioTower,
     number: "02",
     title: "System design",
     description: "Make informed setup decisions with practical calculations for real rooms and rigs.",
-    tools: "Delay · Crossover · Coverage · Alignment",
+    tools: "Delay · Crossover · Coverage · Alignment · SPL / Distance",\n    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: AudioWaveform,
     number: "03",
     title: "Generate",
     description: "Create the signals you need for checking, testing, and tuning an audio system.",
-    tools: "Pink noise · Test tones · Sweeps",
+    tools: "Pink noise · Test tones · Sweeps",\n    status: "IN DEVELOPMENT",
   },
 ];
 
@@ -168,7 +168,7 @@ export default function App() {
                   <h3>{group.title}</h3>
                   <p>{group.description}</p>
                   <div className="tool-group__tools">{group.tools}</div>
-                  <span className="tool-status">IN DEVELOPMENT</span>
+                  <span className="tool-status">{group.status}</span>
                 </article>
               );
             })}
