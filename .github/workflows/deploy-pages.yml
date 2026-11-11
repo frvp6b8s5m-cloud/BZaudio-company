@@ -1,10 +1,13 @@
-name: GitHub Pages
+name: Deploy BZaudio to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Explicitly authorize publishing the built site to production Pages
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -54,7 +57,7 @@ jobs:
 
   deploy:
     name: Publish GitHub Pages
-    if: ${{ github.repository_visibility == 'public' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository_visibility == 'public' && github.ref == 'refs/heads/main' && inputs.publish }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
