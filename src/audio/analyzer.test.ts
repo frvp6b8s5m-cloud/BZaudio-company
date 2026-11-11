@@ -24,6 +24,7 @@ function makeAnalyzerRuntime() {
       return contextState.value;
     },
     sampleRate: 48_000,
+    currentTime: 1.25,
     createMediaStreamSource: vi.fn(() => source),
     createAnalyser: vi.fn(() => analyser),
     close: vi.fn(async () => {
@@ -49,6 +50,7 @@ describe("live analyzer audio session", () => {
 
     const snapshot = session.read();
     expect(snapshot.sampleRate).toBe(48_000);
+    expect(snapshot.contextTime).toBe(1.25);
     expect(snapshot.fftSize).toBe(16_384);
     expect(snapshot.timeDomain[0]).toBeCloseTo(0.25, 5);
     expect(snapshot.frequencyDbfs[0]).toBe(-90);

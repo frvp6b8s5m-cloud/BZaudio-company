@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { startAnalyzerSession, type AnalyzerSession, type AnalyzerSnapshot } from "../../audio/analyzer";
-import { calculatePeakRms, calculateRtaBands, estimateDominantFrequency, mapSpectrumToLogBins } from "../../calculations/dsp/analyzers";
+import { calculatePeakRms, calculateRtaBands, estimateDominantFrequency, findFeedbackCandidates, mapSpectrumToLogBins } from "../../calculations/dsp/analyzers";
+import { IntegratedLufsMeter } from "../../calculations/dsp/lufs";
 import { LevelMeter } from "../../components/LevelMeter";
 import { SpectrumBars } from "../../components/SpectrumBars";
 import { ToolPanel } from "../../components/ToolPanel";
@@ -8,12 +9,17 @@ import "./analyzer-suite.css";
 
 type AnalysisStatus = "stopped" | "starting" | "running" | "error";
 
+interface LiveSnapshot extends AnalyzerSnapshot {
+  integratedLufs: number | null;
+  loudnessBlockCount: number;
+}
+
 interface LiveAnalysisController {
   activeId: string | null;
   errorId: string | null;
   status: AnalysisStatus;
   error: string;
-  snapshot: AnalyzerSnapshot | null;
+  snapshot: LiveSnapshot | null;
   start: (id: string) => Promise<void>;
   stop: (id: string) => Promise<void>;
 }
@@ -25,6 +31,7 @@ function useLiveAnalysis(): LiveAnalysisController {
   const [error, setError] = useState("");
   const [snapshot, setSnapshot] = useState<AnalyzerSnapshot | null>(null);
   const sessionRef = useRef<{ id: string; session: AnalyzerSession } | null>(null);
+  const lufsMeterRef = useRef<IntegratedLufsMeter | null>(null);
   const animationRef = useRef<number | null>(null);
   const mountedRef = useRef(true);
 
@@ -35,6 +42,7 @@ function useLiveAnalysis(): LiveAnalysisController {
       if (animationRef.current !== null) cancelAnimationFrame(animationRef.current);
       const active = sessionRef.current;
       sessionRef.current = null;
+      lufsMeterRef.current = null;
       if (active) void active.session.stop();
     };
   }, []);
@@ -43,6 +51,7 @@ function useLiveAnalysis(): LiveAnalysisController {
     const active = sessionRef.current;
     if (!active || active.id !== id) return;
     sessionRef.current = null;
+    lufsMeterRef.current = null;
     if (animationRef.current !== null) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
@@ -72,14 +81,29 @@ function useLiveAnalysis(): LiveAnalysisController {
         return;
       }
 
+      const lufsMeter = new IntegratedLufsMeter(session.microphone.context.sampleRate);
       sessionRef.current = { id, session };
+      lufsMeterRef.current = lufsMeter;
       setStatus("running");
       let lastUpdate = 0;
+      let lastContextTime: number | null = null;
       const update = (timestamp: number) => {
         if (sessionRef.current?.session !== session) return;
         if (timestamp - lastUpdate >= 50) {
           const next = session.read();
-          setSnapshot({ ...next });
+          const elapsedSamples = lastContextTime === null
+            ? next.fftSize
+            : Math.max(0, Math.round((next.contextTime - lastContextTime) * next.sampleRate));
+          const freshSamples = elapsedSamples >= next.fftSize
+            ? next.timeDomain
+            : next.timeDomain.subarray(next.fftSize - elapsedSamples);
+          lufsMeter.push(freshSamples);
+          setSnapshot({
+            ...next,
+            integratedLufs: lufsMeter.getIntegratedLufs(),
+            loudnessBlockCount: lufsMeter.getBlockCount(),
+          });
+          lastContextTime = next.contextTime;
           lastUpdate = timestamp;
         }
         animationRef.current = requestAnimationFrame(update);
@@ -281,6 +305,84 @@ function RtaAnalyzer({ controller }: { controller: LiveAnalysisController }) {
   );
 }
 
+
+function FeedbackFinder({ controller }: { controller: LiveAnalysisController }) {
+  const id = "feedback";
+  const status = panelStatus(controller, id);
+  const error = panelError(controller, id);
+  const disabled = controller.activeId !== null && controller.activeId !== id;
+  const snapshot = controller.snapshot;
+  const candidates = snapshot
+    ? findFeedbackCandidates(snapshot.frequencyDbfs, snapshot.sampleRate, snapshot.fftSize)
+    : [];
+
+  return (
+    <ToolPanel
+      title="Feedback frequency finder"
+      description="Highlight narrow, prominent peaks that may deserve investigation."
+      eyebrow="ANALYZE / 05"
+    >
+      <AnalyzerControls
+        status={status}
+        error={error}
+        startDisabled={disabled}
+        onStart={() => void controller.start(id)}
+        onStop={() => void controller.stop(id)}
+      />
+      {snapshot ? (
+        candidates.length > 0 ? (
+          <ol className="feedback-candidate-list">
+            {candidates.map((candidate, index) => (
+              <li key={candidate.frequencyHz}>
+                <span className="feedback-candidate-list__rank">{String(index + 1).padStart(2, "0")}</span>
+                <strong>{candidate.frequencyHz.toFixed(1)} Hz</strong>
+                <span>{candidate.levelDbfs.toFixed(1)} dBFS</span>
+                <small>+{candidate.prominenceDb.toFixed(1)} dB prominence</small>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="analyzer-empty">No narrow peaks above the current search threshold.</p>
+        )
+      ) : (
+        <p className="analyzer-empty">Start analysis to scan the input spectrum.</p>
+      )}
+      <p className="analyzer-caution">These are spectral peak candidates, not proof of acoustic feedback. Confirm with listening, system context, and measurement before changing EQ.</p>
+    </ToolPanel>
+  );
+}
+
+function LufsAnalyzer({ controller }: { controller: LiveAnalysisController }) {
+  const id = "lufs";
+  const status = panelStatus(controller, id);
+  const error = panelError(controller, id);
+  const disabled = controller.activeId !== null && controller.activeId !== id;
+  const snapshot = controller.snapshot;
+  const loudness = snapshot?.integratedLufs ?? null;
+
+  return (
+    <ToolPanel
+      title="LUFS loudness meter"
+      description="Measure mono integrated loudness using BS.1770-5 K-weighting and gating."
+      eyebrow="ANALYZE / 06"
+    >
+      <AnalyzerControls
+        status={status}
+        error={error}
+        startDisabled={disabled}
+        onStart={() => void controller.start(id)}
+        onStop={() => void controller.stop(id)}
+      />
+      <div className="analyzer-dominant">
+        <span>INTEGRATED LOUDNESS</span>
+        <output>{loudness === null ? "Integrating…" : `${loudness.toFixed(1)} LUFS`}</output>
+        <small>{snapshot ? `${snapshot.loudnessBlockCount} gated blocks collected · ${snapshot.sampleRate} Hz` : "Awaiting microphone input"}</small>
+      </div>
+      <p className="analyzer-caution">Mono BS.1770-5 integrated loudness only. This does not calculate true peak (dBTP), stereo channel weighting, or calibrated acoustic SPL. Pure tones are not a reliable subjective-loudness test.</p>
+    </ToolPanel>
+  );
+}
+
 export function AnalyzerSuite() {
   const controller = useLiveAnalysis();
   return (
@@ -297,6 +399,8 @@ export function AnalyzerSuite() {
         <FftAnalyzer controller={controller} />
         <FrequencyAnalyzer controller={controller} />
         <RtaAnalyzer controller={controller} />
+        <FeedbackFinder controller={controller} />
+        <LufsAnalyzer controller={controller} />
       </div>
       <p className="analyzer-disclaimer">Browser microphone readings depend on the microphone, interface, input gain, operating-system processing, and calibration. These tools report digital dBFS and spectral estimates, not certified SPL or laboratory measurements.</p>
     </section>

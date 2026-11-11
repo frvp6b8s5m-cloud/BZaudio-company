@@ -20,6 +20,7 @@ function makeSession() {
     microphone: {} as never,
     read: vi.fn(() => ({
       sampleRate: 48_000,
+      contextTime: 1,
       fftSize: 16_384,
       timeDomain,
       frequencyDbfs,
@@ -46,6 +47,8 @@ describe("live analyzer suite", () => {
       "FFT spectrum analyzer",
       "Audio frequency analyzer",
       "Real-time analyzer (RTA)",
+      "Feedback frequency finder",
+      "LUFS loudness meter",
     ]) {
       expect(screen.getByRole("region", { name: title })).toBeInTheDocument();
     }

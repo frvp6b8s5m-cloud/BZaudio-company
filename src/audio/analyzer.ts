@@ -6,6 +6,7 @@ import {
 
 export interface AnalyzerSnapshot {
   sampleRate: number;
+  contextTime: number;
   fftSize: number;
   timeDomain: Float32Array;
   frequencyDbfs: Float32Array;
@@ -48,6 +49,7 @@ export async function startAnalyzerSession(
         analyser.getFloatFrequencyData(frequencyDbfs);
         return {
           sampleRate: microphone.context.sampleRate,
+          contextTime: microphone.context.currentTime,
           fftSize: analyser.fftSize,
           timeDomain,
           frequencyDbfs,
