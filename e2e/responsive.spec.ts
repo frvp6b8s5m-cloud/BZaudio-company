@@ -95,3 +95,39 @@ test("live analyzer starts and stops with a granted fake microphone", async ({ p
   await panel.getByRole("button", { name: "Stop analysis" }).click();
   await expect(panel.getByText("Stopped")).toBeVisible();
 });
+
+
+function createSilentWav(): Buffer {
+  const sampleRate = 8_000;
+  const sampleCount = sampleRate;
+  const dataBytes = sampleCount * 2;
+  const wav = Buffer.alloc(44 + dataBytes);
+  wav.write("RIFF", 0);
+  wav.writeUInt32LE(36 + dataBytes, 4);
+  wav.write("WAVE", 8);
+  wav.write("fmt ", 12);
+  wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20);
+  wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(sampleRate, 24);
+  wav.writeUInt32LE(sampleRate * 2, 28);
+  wav.writeUInt16LE(2, 32);
+  wav.writeUInt16LE(16, 34);
+  wav.write("data", 36);
+  wav.writeUInt32LE(dataBytes, 40);
+  return wav;
+}
+
+test("loads a local WAV file into native browser playback controls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#toolbox");
+  await page.getByLabel("Choose audio file").setInputFiles({
+    name: "reference.wav",
+    mimeType: "audio/wav",
+    buffer: createSilentWav(),
+  });
+
+  await expect(page.getByText("reference.wav")).toBeVisible();
+  await expect(page.getByLabel("Audio playback")).toHaveAttribute("controls");
+  await expect(page.getByText("DURATION 0:01")).toBeVisible({ timeout: 5_000 });
+});
