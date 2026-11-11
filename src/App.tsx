@@ -1,5 +1,6 @@
 import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
 import { SignalTools } from "./features/generators/SignalTools";
+import { AnalyzerSuite } from "./features/analyzers/AnalyzerSuite";
 import {
   Activity,
   ArrowDownRight,
@@ -18,8 +19,8 @@ const toolGroups = [
     number: "01",
     title: "Analyze",
     description: "See what your system is doing, from spectrum and level to phase and feedback.",
-    tools: "RTA · FFT · LUFS · Peak / RMS",
-    status: "IN DEVELOPMENT",
+    tools: "RTA · FFT · Frequency · Peak / RMS",
+    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: RadioTower,
@@ -188,6 +189,7 @@ export default function App() {
           </div>
           <CalculatorSuite />
           <SignalTools />
+          <AnalyzerSuite />
           <div className="toolbox-note">
             <Gauge size={18} />
             <p><strong>Built for accuracy, not guesswork.</strong> Calculations will show their units, formulas, assumptions, and limitations.</p>
