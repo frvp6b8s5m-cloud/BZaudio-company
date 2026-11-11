@@ -29,7 +29,7 @@ function useLiveAnalysis(): LiveAnalysisController {
   const [errorId, setErrorId] = useState<string | null>(null);
   const [status, setStatus] = useState<AnalysisStatus>("stopped");
   const [error, setError] = useState("");
-  const [snapshot, setSnapshot] = useState<AnalyzerSnapshot | null>(null);
+  const [snapshot, setSnapshot] = useState<LiveSnapshot | null>(null);
   const sessionRef = useRef<{ id: string; session: AnalyzerSession } | null>(null);
   const lufsMeterRef = useRef<IntegratedLufsMeter | null>(null);
   const animationRef = useRef<number | null>(null);
@@ -81,7 +81,13 @@ function useLiveAnalysis(): LiveAnalysisController {
         return;
       }
 
-      const lufsMeter = new IntegratedLufsMeter(session.microphone.context.sampleRate);
+      let lufsMeter: IntegratedLufsMeter;
+      try {
+        lufsMeter = new IntegratedLufsMeter(session.microphone.context.sampleRate);
+      } catch (error) {
+        await session.stop();
+        throw error;
+      }
       sessionRef.current = { id, session };
       lufsMeterRef.current = lufsMeter;
       setStatus("running");
