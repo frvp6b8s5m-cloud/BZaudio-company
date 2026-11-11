@@ -284,8 +284,8 @@ export function findFeedbackCandidates(
       !Number.isFinite(left) ||
       !Number.isFinite(right) ||
       level < minLevelDbfs ||
-      level < left ||
-      level < right ||
+      level <= left ||
+      level <= right ||
       (level === left && level === right)
     ) {
       continue;
