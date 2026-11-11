@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { startAnalyzerSession } from "./analyzer";
+import { startAnalyzerSession, startStereoAnalyzerSession } from "./analyzer";
 import type { AudioRuntime } from "./microphone";
 
 function makeAnalyzerRuntime() {
@@ -72,6 +72,80 @@ describe("live analyzer audio session", () => {
     await expect(startAnalyzerSession(fake.runtime)).rejects.toThrow("Analyser unavailable");
     expect(fake.source.disconnect).toHaveBeenCalledOnce();
     expect(fake.track.stop).toHaveBeenCalledOnce();
+    expect(fake.context.close).toHaveBeenCalledOnce();
+  });
+});
+
+
+describe("stereo analyzer audio session", () => {
+  function makeStereoRuntime(channelCount: number) {
+    const leftTrack = { stop: vi.fn(), getSettings: () => ({ channelCount }) };
+    const stream = {
+      getTracks: () => [leftTrack],
+      getAudioTracks: () => [leftTrack],
+    } as unknown as MediaStream;
+    const source = { connect: vi.fn(), disconnect: vi.fn() };
+    const splitter = { connect: vi.fn(), disconnect: vi.fn() };
+    const makeChannelAnalyser = () => ({
+      fftSize: 16_384,
+      frequencyBinCount: 8_192,
+      smoothingTimeConstant: 0,
+      minDecibels: -100,
+      maxDecibels: 0,
+      getFloatTimeDomainData: vi.fn((values: Float32Array) => values.fill(0.5)),
+      getFloatFrequencyData: vi.fn((values: Float32Array) => values.fill(-70)),
+      disconnect: vi.fn(),
+    }) as unknown as AnalyserNode;
+    const leftAnalyser = makeChannelAnalyser();
+    const rightAnalyser = makeChannelAnalyser();
+    const contextState = { value: "running" as AudioContextState };
+    const context = {
+      get state() { return contextState.value; },
+      sampleRate: 48_000,
+      currentTime: 2,
+      createMediaStreamSource: vi.fn(() => source),
+      createChannelSplitter: vi.fn(() => splitter),
+      createAnalyser: vi.fn()
+        .mockReturnValueOnce(leftAnalyser)
+        .mockReturnValueOnce(rightAnalyser),
+      close: vi.fn(async () => { contextState.value = "closed"; }),
+    } as unknown as AudioContext;
+    const runtime: AudioRuntime = {
+      getUserMedia: vi.fn().mockResolvedValue(stream),
+      createAudioContext: vi.fn(() => context),
+    };
+    return { runtime, context, source, splitter, leftAnalyser, rightAnalyser, leftTrack };
+  }
+
+  it("splits two input channels and reads independent channel buffers", async () => {
+    const fake = makeStereoRuntime(2);
+    const session = await startStereoAnalyzerSession(fake.runtime);
+
+    expect(fake.runtime.getUserMedia).toHaveBeenCalledWith({
+      audio: { channelCount: { ideal: 2 } },
+    });
+    expect(fake.context.createChannelSplitter).toHaveBeenCalledWith(2);
+    expect(fake.splitter.connect).toHaveBeenNthCalledWith(1, fake.leftAnalyser, 0);
+    expect(fake.splitter.connect).toHaveBeenNthCalledWith(2, fake.rightAnalyser, 1);
+    const snapshot = session.read();
+    expect(snapshot.leftTimeDomain[0]).toBeCloseTo(0.5, 5);
+    expect(snapshot.rightTimeDomain[0]).toBeCloseTo(0.5, 5);
+    expect(snapshot.contextTime).toBe(2);
+
+    await session.stop();
+    expect(fake.leftAnalyser.disconnect).toHaveBeenCalledOnce();
+    expect(fake.rightAnalyser.disconnect).toHaveBeenCalledOnce();
+    expect(fake.splitter.disconnect).toHaveBeenCalledOnce();
+    expect(fake.leftTrack.stop).toHaveBeenCalledOnce();
+    expect(fake.context.close).toHaveBeenCalledOnce();
+  });
+
+  it("rejects mono input and releases microphone resources", async () => {
+    const fake = makeStereoRuntime(1);
+    await expect(startStereoAnalyzerSession(fake.runtime)).rejects.toThrow(
+      "two-channel input",
+    );
+    expect(fake.leftTrack.stop).toHaveBeenCalledOnce();
     expect(fake.context.close).toHaveBeenCalledOnce();
   });
 });
