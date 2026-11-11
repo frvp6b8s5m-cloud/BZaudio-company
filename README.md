@@ -23,7 +23,14 @@ The current signal-generation tools are:
 - Logarithmic frequency sweep
 - Audio test tones (100 Hz, 1 kHz, 10 kHz)
 
-Generators start only after an explicit user action, default to -20 dBFS, provide Stop controls, and allow only one generator to play at a time. Start with downstream PA/headphone gain low. The remaining Release 1 tools are still in development.
+Generators start only after an explicit user action, default to -20 dBFS, provide Stop controls, and allow only one generator to play at a time. Start with downstream PA/headphone gain low. The current live-analysis tools are:
+
+- Peak/RMS meter (digital PCM dBFS)
+- FFT spectrum analyzer (log-frequency display)
+- Audio frequency analyzer (dominant FFT peak with interpolation)
+- Real-time analyzer (nominal 1/3-octave bands)
+
+Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. The remaining Release 1 tools are still in development.
 
 ## Development
 
