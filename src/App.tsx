@@ -2,6 +2,7 @@ import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
 import {
   Activity,
   ArrowDownRight,
+  Calculator,
   ArrowUpRight,
   AudioLines,
   AudioWaveform,
@@ -16,21 +17,32 @@ const toolGroups = [
     number: "01",
     title: "Analyze",
     description: "See what your system is doing, from spectrum and level to phase and feedback.",
-    tools: "RTA · FFT · LUFS · Peak / RMS",\n    status: "IN DEVELOPMENT",
+    tools: "RTA · FFT · LUFS · Peak / RMS",
+    status: "IN DEVELOPMENT",
   },
   {
     icon: RadioTower,
     number: "02",
     title: "System design",
     description: "Make informed setup decisions with practical calculations for real rooms and rigs.",
-    tools: "Delay · Crossover · Coverage · Alignment · SPL / Distance",\n    status: "PARTIALLY AVAILABLE",
+    tools: "Delay · Crossover · Coverage · Alignment · SPL / Distance",
+    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: AudioWaveform,
     number: "03",
     title: "Generate",
     description: "Create the signals you need for checking, testing, and tuning an audio system.",
-    tools: "Pink noise · Test tones · Sweeps",\n    status: "IN DEVELOPMENT",
+    tools: "Pink noise · Test tones · Sweeps",
+    status: "IN DEVELOPMENT",
+  },
+  {
+    icon: Calculator,
+    number: "04",
+    title: "Calculate",
+    description: "Work through common audio math with transparent formulas and practical units.",
+    tools: "Decibels · Gain · Voltage",
+    status: "PARTIALLY AVAILABLE",
   },
 ];
 
