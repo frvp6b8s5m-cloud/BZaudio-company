@@ -114,47 +114,47 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ## Phase 3 — Release 1 tools
 
 ### Task 10: Deterministic calculator tools
-**Acceptance criteria:** Seven calculators have explicit formulas, units, input validation, visible assumptions, accessible outputs, and reference/boundary tests.
-**Verification:** Vitest reference calculations and boundaries; Playwright interaction and responsive checks.
+**Acceptance criteria:** [x] Seven calculators have explicit formulas, units, input validation, visible assumptions, accessible outputs, and reference/boundary tests.
+**Verification:** CI run 42929172068 passed lint, strict typecheck, 44 unit/component tests across 6 files, 6 Chromium browser tests, production build, dev-server smoke test, and npm audit.
 **Dependencies:** Checkpoint B.
 **Files likely touched:** `src/calculations/engineering.ts`, `src/calculations/engineering.test.ts`, `src/features/calculators/`, `src/App.tsx`, tests.
 **Estimated scope:** Seven small vertical slices, delivered in two commits.
 
 #### Task 10.1: Speaker delay calculator
-- [ ] Calculate propagation delay from distance and temperature-adjusted speed of sound.
+- [x] Calculate propagation delay from distance and temperature-adjusted speed of sound.
 - [ ] Show speed-of-sound assumption, milliseconds, and formula.
 - [ ] Validate finite non-negative distance and supported temperature range.
 - **Verification:** Reference values at 0°C and 20°C plus boundary tests.
 
 #### Task 10.2: Subwoofer alignment calculator
-- [ ] Accept measured main and sub arrival times in milliseconds.
+- [x] Accept measured main and sub arrival times in milliseconds.
 - [ ] Identify the earlier-arriving source and calculate its required delay.
 - [ ] Avoid automatic polarity or phase recommendations.
 - **Verification:** Main-earlier, sub-earlier, equal-arrival, and invalid-value tests.
 
 #### Task 10.3: Crossover starting-point calculator
-- [ ] Accept subwoofer upper and main-speaker lower operating limits.
+- [x] Accept subwoofer upper and main-speaker lower operating limits.
 - [ ] Return no-overlap state when the ranges do not overlap.
 - [ ] Suggest geometric midpoint only when overlap exists.
 - **Verification:** Overlap, boundary-touch, no-overlap, and invalid-value tests.
 
 #### Task 10.4: Speaker coverage calculator
-- [ ] Calculate ideal coverage width from throw distance and horizontal angle.
+- [x] Calculate ideal coverage width from throw distance and horizontal angle.
 - [ ] State symmetric-angle/free-field assumptions.
 - **Verification:** Known-angle reference and invalid-angle boundaries.
 
 #### Task 10.5: SPL and distance calculator
-- [ ] Calculate SPL at a new distance and distance for a target SPL.
+- [x] Calculate SPL at a new distance and distance for a target SPL.
 - [ ] State inverse-square/free-field limitations.
 - **Verification:** Doubling distance produces approximately -6.02 dB; inverse operation round-trips.
 
 #### Task 10.6: Decibel calculator
-- [ ] Convert amplitude and power ratios to dB and back.
+- [x] Convert amplitude and power ratios to dB and back.
 - [ ] Keep amplitude and power modes explicitly distinct.
 - **Verification:** 2× amplitude, 2× power, unity, and invalid-value tests.
 
 #### Task 10.7: Gain and voltage calculator
-- [ ] Calculate voltage gain in dB and output voltage from input voltage plus gain.
+- [x] Calculate voltage gain in dB and output voltage from input voltage plus gain.
 - [ ] Validate positive voltage and finite gain.
 - **Verification:** 2× voltage, 0 dB, and inverse calculation tests.
 

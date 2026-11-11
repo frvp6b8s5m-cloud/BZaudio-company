@@ -2,6 +2,20 @@
 
 A Studio-style live-sound engineering toolbox for practical analysis, system design, signal generation, and audio utilities.
 
+## Available Release 1 calculators
+
+The current toolbox includes seven working calculators:
+
+- Speaker delay (temperature-adjusted speed of sound)
+- Subwoofer alignment (measured arrival-time comparison)
+- Crossover starting point (geometric midpoint of overlapping operating limits)
+- Speaker coverage (ideal horizontal coverage width)
+- SPL and distance (free-field inverse-square estimate)
+- Decibel conversion (amplitude and power ratios)
+- Gain and voltage (voltage-ratio calculations)
+
+Each calculator updates as inputs change and shows units, formulas, and relevant assumptions. The remaining Release 1 tools are still in development.
+
 ## Development
 
 Requirements: Node.js 22 and npm.

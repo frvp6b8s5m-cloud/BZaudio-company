@@ -52,7 +52,7 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 
 ### Phase 3 — Release 1 tool slices
 Implement in testable batches:
-- Batch 1: seven deterministic calculators — speaker delay, subwoofer alignment, crossover starting point, speaker coverage, SPL/distance, decibel, and gain/voltage.
+- [x] Batch 1: seven deterministic calculators — speaker delay, subwoofer alignment, crossover starting point, speaker coverage, SPL/distance, decibel, and gain/voltage (CI verified on 2026-11-11).
   - Speaker delay uses temperature-adjusted sound speed (331.3 + 0.606 × °C m/s; default 20°C).
   - Subwoofer alignment uses measured arrival times and delays the earlier-arriving source; it does not guess polarity or infer phase from distance alone.
   - Crossover suggests the geometric midpoint of the overlapping sub/top operating ranges; it is not an acoustic optimization or preset.
