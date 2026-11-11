@@ -12,36 +12,51 @@ import "./generator-suite.css";
 
 type PlaybackStatus = "stopped" | "starting" | "playing" | "error";
 
-function useAudioPlayback() {
+interface PlaybackController {
+  activeId: string | null;
+  errorId: string | null;
+  status: PlaybackStatus;
+  error: string;
+  start: (id: string, createSession: () => Promise<AudioOutputSession>) => Promise<void>;
+  stop: (id: string) => Promise<void>;
+}
+
+function useAudioPlayback(): PlaybackController {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [errorId, setErrorId] = useState<string | null>(null);
   const [status, setStatus] = useState<PlaybackStatus>("stopped");
   const [error, setError] = useState("");
-  const sessionRef = useRef<AudioOutputSession | null>(null);
+  const sessionRef = useRef<{ id: string; session: AudioOutputSession } | null>(null);
   const mountedRef = useRef(true);
 
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      const session = sessionRef.current;
+      const active = sessionRef.current;
       sessionRef.current = null;
-      if (session) void session.stop();
+      if (active) void active.session.stop();
     };
   }, []);
 
-  async function stop() {
-    const session = sessionRef.current;
+  async function stop(id: string) {
+    const active = sessionRef.current;
+    if (!active || active.id !== id) return;
     sessionRef.current = null;
-    if (session) {
-      await session.stop();
+    await active.session.stop();
+    if (mountedRef.current) {
+      setActiveId(null);
+      setStatus("stopped");
     }
-    if (mountedRef.current) setStatus("stopped");
   }
 
-  async function start(createSession: () => Promise<AudioOutputSession>) {
+  async function start(id: string, createSession: () => Promise<AudioOutputSession>) {
     if (sessionRef.current) {
-      await stop();
+      await stop(sessionRef.current.id);
     }
     setError("");
+    setErrorId(null);
+    setActiveId(id);
     setStatus("starting");
     try {
       const session = await createSession();
@@ -49,23 +64,39 @@ function useAudioPlayback() {
         await session.stop();
         return;
       }
-      sessionRef.current = session;
+      sessionRef.current = { id, session };
       setStatus("playing");
       void session.ended.then(() => {
-        if (sessionRef.current === session) {
+        if (sessionRef.current?.session === session) {
           sessionRef.current = null;
-          if (mountedRef.current) setStatus("stopped");
+          setActiveId(null);
+          setStatus("stopped");
         }
       });
     } catch (cause) {
       if (mountedRef.current) {
+        setActiveId(null);
+        setErrorId(id);
         setError(cause instanceof Error ? cause.message : "Audio output could not start.");
         setStatus("error");
       }
     }
   }
 
-  return { status, error, start, stop };
+  return { activeId, errorId, status, error, start, stop };
+}
+
+function panelStatus(playback: PlaybackController, id: string): PlaybackStatus {
+  if (playback.activeId === id) return playback.status;
+  return playback.errorId === id ? "error" : "stopped";
+}
+
+function panelError(playback: PlaybackController, id: string): string {
+  return playback.errorId === id ? playback.error : "";
+}
+
+function panelDisabled(playback: PlaybackController, id: string): boolean {
+  return playback.activeId !== null && playback.activeId !== id;
 }
 
 function requiredNumber(value: string, label: string): number {
@@ -190,12 +221,14 @@ function PlaybackControls({
   );
 }
 
-function SignalGenerator() {
+function SignalGenerator({ playback }: { playback: PlaybackController }) {
   const [frequency, setFrequency] = useState("1000");
   const [waveform, setWaveform] = useState<OscillatorWaveform>("sine");
   const [level, setLevel] = useState("-20");
-  const playback = useAudioPlayback();
-  const disabled = playback.status === "playing" || playback.status === "starting";
+  const id = "signal";
+  const status = panelStatus(playback, id);
+  const error = panelError(playback, id);
+  const disabled = panelDisabled(playback, id) || status === "playing" || status === "starting";
 
   return (
     <ToolPanel
@@ -220,26 +253,28 @@ function SignalGenerator() {
         <NumberField label="Output level" value={level} unit="dBFS" min={-60} max={0} disabled={disabled} onChange={setLevel} />
       </div>
       <PlaybackControls
-        status={playback.status}
-        error={playback.error}
+        status={status}
+        error={error}
         startLabel="Start signal"
         stopLabel="Stop signal"
-        onStart={() => void playback.start(() => startToneSession({
+        onStart={() => void playback.start(id, () => startToneSession({
           frequencyHz: requiredNumber(frequency, "Frequency"),
           waveform,
           levelDbfs: requiredNumber(level, "Output level"),
         }))}
-        onStop={() => void playback.stop()}
+        onStop={() => void playback.stop(id)}
       />
       <p className="generator-caution">Starts at -20 dBFS. Confirm downstream gain is low before sending a test signal to a PA or headphones.</p>
     </ToolPanel>
   );
 }
 
-function NoiseGenerator({ kind }: { kind: NoiseKind }) {
+function NoiseGenerator({ kind, playback }: { kind: NoiseKind; playback: PlaybackController }) {
   const [level, setLevel] = useState("-20");
-  const playback = useAudioPlayback();
-  const disabled = playback.status === "playing" || playback.status === "starting";
+  const id = kind === "pink" ? "pink-noise" : "white-noise";
+  const status = panelStatus(playback, id);
+  const error = panelError(playback, id);
+  const disabled = panelDisabled(playback, id) || status === "playing" || status === "starting";
   const label = kind === "pink" ? "Pink noise" : "White noise";
 
   return (
@@ -252,25 +287,27 @@ function NoiseGenerator({ kind }: { kind: NoiseKind }) {
         <NumberField label="Output level" value={level} unit="dBFS" min={-60} max={0} disabled={disabled} onChange={setLevel} />
       </div>
       <PlaybackControls
-        status={playback.status}
-        error={playback.error}
+        status={status}
+        error={error}
         startLabel={`Start ${kind} noise`}
         stopLabel={`Stop ${kind} noise`}
-        onStart={() => void playback.start(() => startNoiseSession(kind, requiredNumber(level, "Output level")))}
-        onStop={() => void playback.stop()}
+        onStart={() => void playback.start(id, () => startNoiseSession(kind, requiredNumber(level, "Output level")))}
+        onStop={() => void playback.stop(id)}
       />
       <p className="generator-caution">Noise is generated locally in a short looping buffer. Start with system gain low; pink noise is approximate and not a calibrated measurement signal.</p>
     </ToolPanel>
   );
 }
 
-function FrequencySweepGenerator() {
+function FrequencySweepGenerator({ playback }: { playback: PlaybackController }) {
   const [startFrequency, setStartFrequency] = useState("20");
   const [endFrequency, setEndFrequency] = useState("20000");
   const [duration, setDuration] = useState("10");
   const [level, setLevel] = useState("-20");
-  const playback = useAudioPlayback();
-  const disabled = playback.status === "playing" || playback.status === "starting";
+  const id = "sweep";
+  const status = panelStatus(playback, id);
+  const error = panelError(playback, id);
+  const disabled = panelDisabled(playback, id) || status === "playing" || status === "starting";
 
   return (
     <ToolPanel
@@ -285,28 +322,30 @@ function FrequencySweepGenerator() {
         <NumberField label="Output level" value={level} unit="dBFS" min={-60} max={0} disabled={disabled} onChange={setLevel} />
       </div>
       <PlaybackControls
-        status={playback.status}
-        error={playback.error}
+        status={status}
+        error={error}
         startLabel="Start sweep"
         stopLabel="Stop sweep"
-        onStart={() => void playback.start(() => startSweepSession({
+        onStart={() => void playback.start(id, () => startSweepSession({
           startFrequencyHz: requiredNumber(startFrequency, "Start frequency"),
           endFrequencyHz: requiredNumber(endFrequency, "End frequency"),
           durationSeconds: requiredNumber(duration, "Duration"),
           levelDbfs: requiredNumber(level, "Output level"),
         }))}
-        onStop={() => void playback.stop()}
+        onStop={() => void playback.stop(id)}
       />
       <p className="generator-caution">The sweep stops automatically at the selected duration. Start with system gain low and avoid running a sweep through a loud PA without a controlled test procedure.</p>
     </ToolPanel>
   );
 }
 
-function TestToneGenerator() {
+function TestToneGenerator({ playback }: { playback: PlaybackController }) {
   const [frequency, setFrequency] = useState("1000");
   const [level, setLevel] = useState("-20");
-  const playback = useAudioPlayback();
-  const disabled = playback.status === "playing" || playback.status === "starting";
+  const id = "test-tone";
+  const status = panelStatus(playback, id);
+  const error = panelError(playback, id);
+  const disabled = panelDisabled(playback, id) || status === "playing" || status === "starting";
 
   return (
     <ToolPanel
@@ -329,16 +368,16 @@ function TestToneGenerator() {
         <NumberField label="Output level" value={level} unit="dBFS" min={-60} max={0} disabled={disabled} onChange={setLevel} />
       </div>
       <PlaybackControls
-        status={playback.status}
-        error={playback.error}
+        status={status}
+        error={error}
         startLabel="Start test tone"
         stopLabel="Stop test tone"
-        onStart={() => void playback.start(() => startToneSession({
+        onStart={() => void playback.start(id, () => startToneSession({
           frequencyHz: requiredNumber(frequency, "Test tone frequency"),
           waveform: "sine",
           levelDbfs: requiredNumber(level, "Output level"),
         }))}
-        onStop={() => void playback.stop()}
+        onStop={() => void playback.stop(id)}
       />
       <p className="generator-caution">Default is 1 kHz at -20 dBFS. A digital reference level is not a guarantee of acoustic SPL or amplifier output.</p>
     </ToolPanel>
@@ -346,6 +385,7 @@ function TestToneGenerator() {
 }
 
 export function SignalTools() {
+  const playback = useAudioPlayback();
   return (
     <section className="generator-suite-section" aria-labelledby="generator-suite-title">
       <div className="generator-suite-heading">
@@ -356,11 +396,11 @@ export function SignalTools() {
         <p>Audio starts only when you press Start. Every generator has an explicit Stop control and releases its audio resources.</p>
       </div>
       <div className="generator-suite">
-        <SignalGenerator />
-        <NoiseGenerator kind="pink" />
-        <NoiseGenerator kind="white" />
-        <FrequencySweepGenerator />
-        <TestToneGenerator />
+        <SignalGenerator playback={playback} />
+        <NoiseGenerator kind="pink" playback={playback} />
+        <NoiseGenerator kind="white" playback={playback} />
+        <FrequencySweepGenerator playback={playback} />
+        <TestToneGenerator playback={playback} />
       </div>
     </section>
   );
