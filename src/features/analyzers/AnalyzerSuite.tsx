@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { startAnalyzerSession, type AnalyzerSession, type AnalyzerSnapshot } from "../../audio/analyzer";
+import { startAnalyzerSession, startStereoAnalyzerSession, type AnalyzerSession, type AnalyzerSnapshot, type StereoAnalyzerSession, type StereoAnalyzerSnapshot } from "../../audio/analyzer";
 import { calculatePeakRms, calculateRtaBands, estimateDominantFrequency, findFeedbackCandidates, mapSpectrumToLogBins } from "../../calculations/dsp/analyzers";
 import { IntegratedLufsMeter } from "../../calculations/dsp/lufs";
+import { analyzeStereoPhase } from "../../calculations/dsp/phase";
 import { LevelMeter } from "../../components/LevelMeter";
 import { SpectrumBars } from "../../components/SpectrumBars";
 import { ToolPanel } from "../../components/ToolPanel";
@@ -20,7 +21,8 @@ interface LiveAnalysisController {
   status: AnalysisStatus;
   error: string;
   snapshot: LiveSnapshot | null;
-  start: (id: string) => Promise<void>;
+  stereoSnapshot: StereoAnalyzerSnapshot | null;
+  start: (id: string, mode?: "mono" | "stereo") => Promise<void>;
   stop: (id: string) => Promise<void>;
 }
 
@@ -30,7 +32,8 @@ function useLiveAnalysis(): LiveAnalysisController {
   const [status, setStatus] = useState<AnalysisStatus>("stopped");
   const [error, setError] = useState("");
   const [snapshot, setSnapshot] = useState<LiveSnapshot | null>(null);
-  const sessionRef = useRef<{ id: string; session: AnalyzerSession } | null>(null);
+  const [stereoSnapshot, setStereoSnapshot] = useState<StereoAnalyzerSnapshot | null>(null);
+  const sessionRef = useRef<{ id: string; token: object; stop: () => Promise<void> } | null>(null);
   const lufsMeterRef = useRef<IntegratedLufsMeter | null>(null);
   const animationRef = useRef<number | null>(null);
   const mountedRef = useRef(true);
@@ -43,7 +46,7 @@ function useLiveAnalysis(): LiveAnalysisController {
       const active = sessionRef.current;
       sessionRef.current = null;
       lufsMeterRef.current = null;
-      if (active) void active.session.stop();
+      if (active) void active.stop();
     };
   }, []);
 
@@ -56,61 +59,77 @@ function useLiveAnalysis(): LiveAnalysisController {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
     }
-    await active.session.stop();
+    await active.stop();
     if (mountedRef.current) {
       setActiveId(null);
       setStatus("stopped");
       setSnapshot(null);
+      setStereoSnapshot(null);
     }
   }
 
-  async function start(id: string) {
+  async function start(id: string, mode: "mono" | "stereo" = "mono") {
     if (sessionRef.current) {
       await stop(sessionRef.current.id);
     }
     setError("");
     setErrorId(null);
     setSnapshot(null);
+    setStereoSnapshot(null);
     setActiveId(id);
     setStatus("starting");
 
     try {
-      const session = await startAnalyzerSession();
+      const session = mode === "stereo"
+        ? await startStereoAnalyzerSession()
+        : await startAnalyzerSession();
+
       if (!mountedRef.current) {
         await session.stop();
         return;
       }
 
-      let lufsMeter: IntegratedLufsMeter;
-      try {
-        lufsMeter = new IntegratedLufsMeter(session.microphone.context.sampleRate);
-      } catch (error) {
-        await session.stop();
-        throw error;
+      let lufsMeter: IntegratedLufsMeter | null = null;
+      if (mode === "mono") {
+        try {
+          lufsMeter = new IntegratedLufsMeter(session.microphone.context.sampleRate);
+        } catch (cause) {
+          await session.stop();
+          throw cause;
+        }
       }
-      sessionRef.current = { id, session };
+
+      const token = {};
+      sessionRef.current = { id, token, stop: () => session.stop() };
       lufsMeterRef.current = lufsMeter;
       setStatus("running");
       let lastUpdate = 0;
       let lastContextTime = session.startedAtContextTime;
+
       const update = (timestamp: number) => {
-        if (sessionRef.current?.session !== session) return;
+        if (sessionRef.current?.token !== token) return;
         if (timestamp - lastUpdate >= 50) {
-          const next = session.read();
-          const elapsedSamples = Math.max(
-            0,
-            Math.round((next.contextTime - lastContextTime) * next.sampleRate),
-          );
-          const freshSamples = elapsedSamples >= next.fftSize
-            ? next.timeDomain
-            : next.timeDomain.subarray(next.fftSize - elapsedSamples);
-          lufsMeter.push(freshSamples);
-          setSnapshot({
-            ...next,
-            integratedLufs: lufsMeter.getIntegratedLufs(),
-            loudnessBlockCount: lufsMeter.getBlockCount(),
-          });
-          lastContextTime = next.contextTime;
+          if (mode === "stereo") {
+            const stereoSession = session as StereoAnalyzerSession;
+            setStereoSnapshot({ ...stereoSession.read() });
+          } else {
+            const monoSession = session as AnalyzerSession;
+            const next = monoSession.read();
+            const elapsedSamples = Math.max(
+              0,
+              Math.round((next.contextTime - lastContextTime) * next.sampleRate),
+            );
+            const freshSamples = elapsedSamples >= next.fftSize
+              ? next.timeDomain
+              : next.timeDomain.subarray(next.fftSize - elapsedSamples);
+            lufsMeter?.push(freshSamples);
+            setSnapshot({
+              ...next,
+              integratedLufs: lufsMeter?.getIntegratedLufs() ?? null,
+              loudnessBlockCount: lufsMeter?.getBlockCount() ?? 0,
+            });
+            lastContextTime = next.contextTime;
+          }
           lastUpdate = timestamp;
         }
         animationRef.current = requestAnimationFrame(update);
@@ -126,7 +145,7 @@ function useLiveAnalysis(): LiveAnalysisController {
     }
   }
 
-  return { activeId, errorId, status, error, snapshot, start, stop };
+  return { activeId, errorId, status, error, snapshot, stereoSnapshot, start, stop };
 }
 
 function maximumFrequencyLabel(sampleRate?: number): string {
@@ -404,6 +423,64 @@ function LufsAnalyzer({ controller }: { controller: LiveAnalysisController }) {
   );
 }
 
+
+function PhasePolarityAnalyzer({ controller }: { controller: LiveAnalysisController }) {
+  const id = "phase-polarity";
+  const status = panelStatus(controller, id);
+  const error = panelError(controller, id);
+  const disabled = controller.activeId !== null && controller.activeId !== id;
+  const stereo = controller.stereoSnapshot;
+  const dominant = stereo
+    ? estimateDominantFrequency(stereo.leftFrequencyDbfs, stereo.sampleRate, stereo.fftSize)
+    : null;
+  const result = stereo && dominant
+    ? analyzeStereoPhase(
+        stereo.leftTimeDomain,
+        stereo.rightTimeDomain,
+        stereo.sampleRate,
+        dominant.frequencyHz,
+      )
+    : null;
+  const polarityLabel = result
+    ? result.polarity === "same"
+      ? "Same polarity"
+      : result.polarity === "inverted"
+        ? "Inverted polarity"
+        : result.polarity === "uncorrelated"
+          ? "Low correlation / phase shifted"
+          : "Unavailable"
+    : "Awaiting stereo input";
+
+  return (
+    <ToolPanel
+      title="Phase / polarity analyzer"
+      description="Compare relative phase and polarity between two input channels."
+      eyebrow="ANALYZE / 07"
+    >
+      <AnalyzerControls
+        status={status}
+        error={error}
+        startDisabled={disabled}
+        onStart={() => void controller.start(id, "stereo")}
+        onStop={() => void controller.stop(id)}
+      />
+      <div className="analyzer-readouts">
+        <div className="analyzer-metric">
+          <span>RELATIVE POLARITY</span>
+          <output>{polarityLabel}</output>
+          <small>{result?.correlation === null || !result ? "Two usable channels required" : `Correlation ${result.correlation.toFixed(3)}`}</small>
+        </div>
+        <div className="analyzer-metric">
+          <span>PHASE AT DOMINANT FREQUENCY</span>
+          <output>{result?.phaseDegrees === null || !result ? "—" : `${result.phaseDegrees.toFixed(1)}°`}</output>
+          <small>{dominant ? `Channel A peak ${dominant.frequencyHz.toFixed(1)} Hz` : "No stable spectral peak"}</small>
+        </div>
+      </div>
+      <p className="analyzer-caution">Requires a two-channel input. This compares channels A and B; it is not a substitute for acoustic phase alignment between loudspeakers at a measurement position.</p>
+    </ToolPanel>
+  );
+}
+
 export function AnalyzerSuite() {
   const controller = useLiveAnalysis();
   return (
@@ -422,6 +499,7 @@ export function AnalyzerSuite() {
         <RtaAnalyzer controller={controller} />
         <FeedbackFinder controller={controller} />
         <LufsAnalyzer controller={controller} />
+        <PhasePolarityAnalyzer controller={controller} />
       </div>
       <p className="analyzer-disclaimer">Browser microphone readings depend on the microphone, interface, input gain, operating-system processing, and calibration. These tools report digital dBFS and spectral estimates, not certified SPL or laboratory measurements.</p>
     </section>

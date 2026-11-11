@@ -4,6 +4,7 @@ import { AnalyzerSuite } from "./AnalyzerSuite";
 
 const analyzerMocks = vi.hoisted(() => ({
   startAnalyzerSession: vi.fn(),
+  startStereoAnalyzerSession: vi.fn(),
 }));
 
 vi.mock("../../audio/analyzer", () => analyzerMocks);
@@ -50,6 +51,7 @@ describe("live analyzer suite", () => {
       "Real-time analyzer (RTA)",
       "Feedback frequency finder",
       "LUFS loudness meter",
+      "Phase / polarity analyzer",
     ]) {
       expect(screen.getByRole("region", { name: title })).toBeInTheDocument();
     }
@@ -84,6 +86,37 @@ describe("live analyzer suite", () => {
     fireEvent.click(within(fftPanel).getByRole("button", { name: "Stop analysis" }));
     await waitFor(() => expect(within(fftPanel).getByText("Stopped")).toBeInTheDocument());
     expect(session.stop).toHaveBeenCalledOnce();
+  });
+
+  it("uses the stereo analyzer for phase and polarity checks", async () => {
+    const stereoSession = {
+      startedAtContextTime: 0,
+      microphone: { context: { sampleRate: 48_000 } },
+      read: vi.fn(() => ({
+        sampleRate: 48_000,
+        contextTime: 1,
+        fftSize: 16_384,
+        leftTimeDomain: new Float32Array(16_384),
+        rightTimeDomain: new Float32Array(16_384),
+        leftFrequencyDbfs: new Float32Array(8_192).fill(-100),
+        rightFrequencyDbfs: new Float32Array(8_192).fill(-100),
+      })),
+      stop: vi.fn().mockResolvedValue(undefined),
+    };
+    analyzerMocks.startStereoAnalyzerSession.mockResolvedValue(stereoSession);
+    vi.stubGlobal("requestAnimationFrame", vi.fn(() => 1));
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+    render(<AnalyzerSuite />);
+
+    const panel = screen.getByRole("region", { name: "Phase / polarity analyzer" });
+    fireEvent.click(within(panel).getByRole("button", { name: "Start analysis" }));
+    await waitFor(() => {
+      expect(analyzerMocks.startStereoAnalyzerSession).toHaveBeenCalledOnce();
+      expect(within(panel).getByText("Analyzing")).toBeInTheDocument();
+    });
+    fireEvent.click(within(panel).getByRole("button", { name: "Stop analysis" }));
+    await waitFor(() => expect(within(panel).getByText("Stopped")).toBeInTheDocument());
+    expect(stereoSession.stop).toHaveBeenCalledOnce();
   });
 
   it("shows a permission error without leaving a live session active", async () => {
