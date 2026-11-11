@@ -68,6 +68,17 @@ function useAudioPlayback() {
   return { status, error, start, stop };
 }
 
+function requiredNumber(value: string, label: string): number {
+  if (value.trim() === "") {
+    throw new RangeError(`${label} is required.`);
+  }
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    throw new RangeError(`${label} must be a finite number.`);
+  }
+  return parsed;
+}
+
 function NumberField({
   label,
   value,
@@ -214,9 +225,9 @@ function SignalGenerator() {
         startLabel="Start signal"
         stopLabel="Stop signal"
         onStart={() => void playback.start(() => startToneSession({
-          frequencyHz: Number(frequency),
+          frequencyHz: requiredNumber(frequency, "Frequency"),
           waveform,
-          levelDbfs: Number(level),
+          levelDbfs: requiredNumber(level, "Output level"),
         }))}
         onStop={() => void playback.stop()}
       />
@@ -245,7 +256,7 @@ function NoiseGenerator({ kind }: { kind: NoiseKind }) {
         error={playback.error}
         startLabel={`Start ${kind} noise`}
         stopLabel={`Stop ${kind} noise`}
-        onStart={() => void playback.start(() => startNoiseSession(kind, Number(level)))}
+        onStart={() => void playback.start(() => startNoiseSession(kind, requiredNumber(level, "Output level")))}
         onStop={() => void playback.stop()}
       />
       <p className="generator-caution">Noise is generated locally in a short looping buffer. Start with system gain low; pink noise is approximate and not a calibrated measurement signal.</p>
@@ -279,9 +290,9 @@ function FrequencySweepGenerator() {
         startLabel="Start sweep"
         stopLabel="Stop sweep"
         onStart={() => void playback.start(() => startSweepSession({
-          startFrequencyHz: Number(startFrequency),
-          endFrequencyHz: Number(endFrequency),
-          durationSeconds: Number(duration),
+          startFrequencyHz: requiredNumber(startFrequency, "Start frequency"),
+          endFrequencyHz: requiredNumber(endFrequency, "End frequency"),
+          durationSeconds: requiredNumber(duration, "Duration"),
           levelDbfs: Number(level),
         }))}
         onStop={() => void playback.stop()}
@@ -323,7 +334,7 @@ function TestToneGenerator() {
         startLabel="Start test tone"
         stopLabel="Stop test tone"
         onStart={() => void playback.start(() => startToneSession({
-          frequencyHz: Number(frequency),
+          frequencyHz: requiredNumber(frequency, "Test tone frequency"),
           waveform: "sine",
           levelDbfs: Number(level),
         }))}

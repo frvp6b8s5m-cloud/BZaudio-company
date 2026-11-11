@@ -79,6 +79,17 @@ describe("Release 1 signal generators", () => {
     });
   });
 
+  it("rejects blank output levels instead of interpreting them as full-scale zero", async () => {
+    render(<SignalTools />);
+    const signalPanel = screen.getByRole("region", { name: "Signal generator" });
+    fireEvent.change(within(signalPanel).getByLabelText("Output level"), {
+      target: { value: "" },
+    });
+    fireEvent.click(within(signalPanel).getByRole("button", { name: "Start signal" }));
+    expect(await within(signalPanel).findByRole("alert")).toHaveTextContent("Output level is required.");
+    expect(audioMocks.startToneSession).not.toHaveBeenCalled();
+  });
+
   it("shows a clear error if the browser cannot start audio output", async () => {
     audioMocks.startToneSession.mockRejectedValue(new Error("Audio output is unavailable."));
     render(<SignalTools />);
