@@ -58,7 +58,7 @@ test("calculator suite renders and updates a live speaker-delay result", async (
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Speaker delay" })).toBeVisible();
 
-  const distance = page.getByLabel("Distance (m)");
+  const distance = page.getByRole("spinbutton", { name: "Distance (m)", exact: true });
   await distance.fill("20");
   await expect(page.getByText("58.24 ms")).toBeVisible();
 
