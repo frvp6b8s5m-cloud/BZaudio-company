@@ -122,40 +122,40 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 
 #### Task 10.1: Speaker delay calculator
 - [x] Calculate propagation delay from distance and temperature-adjusted speed of sound.
-- [ ] Show speed-of-sound assumption, milliseconds, and formula.
-- [ ] Validate finite non-negative distance and supported temperature range.
+- [x] Show speed-of-sound assumption, milliseconds, and formula.
+- [x] Validate finite non-negative distance and supported temperature range.
 - **Verification:** Reference values at 0°C and 20°C plus boundary tests.
 
 #### Task 10.2: Subwoofer alignment calculator
 - [x] Accept measured main and sub arrival times in milliseconds.
-- [ ] Identify the earlier-arriving source and calculate its required delay.
-- [ ] Avoid automatic polarity or phase recommendations.
+- [x] Identify the earlier-arriving source and calculate its required delay.
+- [x] Avoid automatic polarity or phase recommendations.
 - **Verification:** Main-earlier, sub-earlier, equal-arrival, and invalid-value tests.
 
 #### Task 10.3: Crossover starting-point calculator
 - [x] Accept subwoofer upper and main-speaker lower operating limits.
-- [ ] Return no-overlap state when the ranges do not overlap.
-- [ ] Suggest geometric midpoint only when overlap exists.
+- [x] Return no-overlap state when the ranges do not overlap.
+- [x] Suggest geometric midpoint only when overlap exists.
 - **Verification:** Overlap, boundary-touch, no-overlap, and invalid-value tests.
 
 #### Task 10.4: Speaker coverage calculator
 - [x] Calculate ideal coverage width from throw distance and horizontal angle.
-- [ ] State symmetric-angle/free-field assumptions.
+- [x] State symmetric-angle/free-field assumptions.
 - **Verification:** Known-angle reference and invalid-angle boundaries.
 
 #### Task 10.5: SPL and distance calculator
 - [x] Calculate SPL at a new distance and distance for a target SPL.
-- [ ] State inverse-square/free-field limitations.
+- [x] State inverse-square/free-field limitations.
 - **Verification:** Doubling distance produces approximately -6.02 dB; inverse operation round-trips.
 
 #### Task 10.6: Decibel calculator
 - [x] Convert amplitude and power ratios to dB and back.
-- [ ] Keep amplitude and power modes explicitly distinct.
+- [x] Keep amplitude and power modes explicitly distinct.
 - **Verification:** 2× amplitude, 2× power, unity, and invalid-value tests.
 
 #### Task 10.7: Gain and voltage calculator
 - [x] Calculate voltage gain in dB and output voltage from input voltage plus gain.
-- [ ] Validate positive voltage and finite gain.
+- [x] Validate positive voltage and finite gain.
 - **Verification:** 2× voltage, 0 dB, and inverse calculation tests.
 
 ### Task 11: Signal and noise generators
@@ -178,7 +178,7 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 
 #### Task 11.3: White noise generator
 - [x] Generate bounded white-noise buffer and loop during playback.
-- [ ] Conservative -20 dBFS default and explicit stop.
+- [x] Conservative -20 dBFS default and explicit stop.
 - **Verification:** Deterministic sample tests and looping buffer-source tests.
 
 #### Task 11.4: Frequency sweep
@@ -194,39 +194,41 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 
 ### Task 12: Analysis and metering tools
 **Acceptance criteria:** [x] RTA, FFT, frequency, LUFS, peak/RMS, phase/polarity, and feedback analysis have stated limits and meaningful output.
-**Verification:** CI run 42933458969 passed lint, strict typecheck, 91 unit/component tests across 14 files, 9 Chromium browser tests, production build, dev-server smoke test, and npm audit. Synthetic fixtures cover phase/polarity and analyzer calculations; stereo microphone tests verify independent channel routing and cleanup.
+**Verification:** CI run 42956664767 passed lint, strict typecheck, 91 unit/component tests across 14 files, 33 Playwright tests across Chromium, Firefox, and WebKit (3 documented headless audio skips), production build, production-preview smoke test, and npm audit. Synthetic fixtures cover phase/polarity and analyzer calculations; stereo microphone tests verify independent channel routing and cleanup.
 **Dependencies:** Tasks 8–9.
 **Files:** `src/audio/`, `src/calculations/dsp/`, `src/features/analyzers/`.
 
 ### Task 13: Audio file player
 **Acceptance criteria:** [x] Local audio files can be selected and played without upload to a server; unsupported formats and errors are handled.
-**Verification:** CI run 42933458969 includes a Chromium test that loads a generated WAV fixture, confirms native playback controls, and checks the one-second duration. Component tests verify local object URL creation, replacement/unmount cleanup, and non-audio rejection.
+**Verification:** CI run 42956664767 includes cross-engine tests that load a generated WAV fixture and confirm native playback controls and one-second duration. Component tests verify local object URL creation, replacement/unmount cleanup, and non-audio rejection.
 **Dependencies:** Checkpoint B.
 **Files:** `src/features/player/AudioFilePlayer.tsx`, `audio-file-player.css`, and tests.
 
 ### Checkpoint C — Release 1 review
 - [x] All 20 Release 1 tools are implemented and verified; task groups are decomposed into individual tool tasks before execution.
-- [ ] Human approves release candidate.
+- [x] User approved continued implementation and Phase 4 checks on 2026-11-11.
+- [x] Release 1 review confirmed implemented analyzers, generators, seven calculators, and local audio file playback.
+- [x] Human approves the Release 1 candidate for continued release hardening; production publication remains a separate gate.
 
 ## Phase 4 — Hardening and release
 
 ### Task 14: Accessibility, browser, and performance audit
-**Acceptance criteria:** [ ] Keyboard, screen-reader labels, contrast, mobile layouts, and supported-browser behavior are checked.
-**Verification:** Automated and manual audit.
+**Acceptance criteria:** [x] Automated keyboard navigation, accessible control names/landmarks, key small-text WCAG AA contrast pairs, 320/390/768/1440px responsive layouts, and browser-neutral flows are verified in Chromium, Firefox, and WebKit. Manual VoiceOver/NVDA review and real-device audio verification remain release follow-ups.
+**Verification:** CI run 42956664767: 33 Playwright tests passed across three engines; three documented audio tests are skipped where the headless browser lacks a fake audio device. Small technical text contrast checks are at least 4.5:1. Production bundle: 65.57 kB JS + 5.48 kB CSS + 0.49 kB HTML gzip.
 **Dependencies:** Checkpoint C.
 **Files likely touched:** App source, tests, docs.
 **Estimated scope:** Medium.
 
 ### Task 15: Security and dependency audit
-**Acceptance criteria:** [ ] No secrets, unsafe HTML injection, unneeded permissions, or unreviewed high-risk dependencies.
-**Verification:** Native package audit, workflow permission review, staged-diff secret scan.
+**Acceptance criteria:** [x] Targeted scan of 48 source/config files found no private-key, GitHub-token, AWS-key, Stripe-secret, unsafe-HTML, or dynamic-code patterns; no environment or private-key files are tracked. CI and build workflows use read-only contents permissions; only the separately gated Pages deploy job receives pages/id-token write. Static site includes a restrictive CSP and strict referrer policy.
+**Verification:** CI run 42956664767 completed `npm audit --audit-level=high` with 0 vulnerabilities. This is a targeted repository scan, not a guarantee against every possible secret format.
 **Dependencies:** Checkpoint C.
 **Files likely touched:** Config and documentation only if findings require changes.
 **Estimated scope:** Small.
 
 ### Task 16: Pages deployment and rollback verification
-**Acceptance criteria:** [ ] Correct project base path, deep links, artifact deployment, and rollback procedure are verified.
-**Verification:** GitHub Actions run and live smoke test after explicit deployment approval.
+**Acceptance criteria:** [ ] Correct project base path, deep links, Pages artifact deployment, Pages settings, and rollback procedure are verified. The app uses a relative Vite base path and hash navigation; production Pages settings and live deployment remain unverified.
+**Verification:** CI verifies the production preview build and client-side hash navigation. Pages deployment and rollback checks are intentionally deferred until the final production-release gate.
 **Dependencies:** Tasks 6, 14, 15; repository Pages prerequisites.
 **Files likely touched:** Workflows and deployment docs.
 **Estimated scope:** Medium.

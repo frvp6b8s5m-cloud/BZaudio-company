@@ -30,7 +30,7 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 ### Checkpoint A — Foundation review
 - [x] Local development server starts and responds to the CI smoke test.
 - [x] Lint, typecheck, tests, and build pass using `npm ci`.
-- [x] CI workflow runs successfully, including dependency audit and dev-server smoke test.
+- [x] CI workflow runs successfully, including three-engine Playwright tests, dependency audit, and production-preview smoke test.
 - [x] No secrets or privileged tokens are present in the reviewed project files; CI uses read-only permissions.
 - [x] Manual Pages workflow and artifact-upload path are reviewed and preflighted without publishing; Pages site settings and live deployment are deferred to release approval.
 - [x] Repository visibility matches the user's explicit public-repository decision; production deployment remains disabled.
@@ -71,17 +71,21 @@ Implement in testable batches:
 Every tool requires a short tool spec, unit/input validation, meaningful empty/error states, tests, and documented limitations.
 
 ### Checkpoint C — Release 1 review
-- [x] All 20 tools are implemented and pass the current Chromium CI suite; cross-browser manual verification remains a Phase 4 hardening task.
+- [x] All 20 tools are implemented; cross-engine CI verifies responsive UI, calculators, file playback, keyboard skip navigation, accessible control names, and selected audio workflows.
 - [x] Calculation and DSP test fixtures pass in CI.
 - [x] Microphone permission/device/unsupported-API failures and cleanup are unit tested; two-channel analyzer rejects mono input. Manual device-loss checks remain in Phase 4.
 - [x] UI and docs label microphone-based measurements as uncalibrated estimates; SPL and phase tool limitations are documented.
 - [ ] Human approves release candidate.
 
 ### Phase 4 — Release hardening
-- Run accessibility, responsive, browser, dependency audit, and performance checks.
-- Verify GitHub Pages base path and deep-link behavior.
-- Document deployment and rollback procedures.
-- Obtain explicit production deployment approval.
+- [x] Automated accessibility checks: keyboard skip link, named controls, landmarks, unique IDs, and small-text contrast >= 4.5:1.
+- [x] Responsive checks at 320, 390, 768, and 1440 CSS pixels in Chromium, Firefox, and WebKit.
+- [x] Cross-engine browser workflows: calculator updates, file playback, navigation, CSP asset loading; signal output verified in Chromium/WebKit. Headless Firefox audio output and real-device microphone behavior remain manual checks.
+- [x] Security checks: restrictive CSP/referrer policy, workflow least-privilege review, targeted source/config secret and unsafe-code scan, npm audit (0 vulnerabilities).
+- [x] Production bundle checked: 65.57 kB JS gzip, 5.48 kB CSS gzip, 0.49 kB HTML gzip.
+- [ ] Verify GitHub Pages project base path, repository Pages settings, live deep links, artifact deployment, and rollback procedure.
+- [ ] Complete manual VoiceOver/NVDA and physical browser/audio-interface verification.
+- [ ] Obtain explicit production deployment and main-branch merge approval.
 
 ### Phase 5 — Release 2
 Plan and implement the remaining 10 tools after Release 1 review; do not expand scope without approval.
