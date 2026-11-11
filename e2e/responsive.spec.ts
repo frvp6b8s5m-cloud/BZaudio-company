@@ -81,3 +81,17 @@ test("signal generator starts and stops in the browser", async ({ page }) => {
   await panel.getByRole("button", { name: "Stop signal" }).click();
   await expect(panel.getByText("Stopped")).toBeVisible();
 });
+
+
+test("live analyzer starts and stops with a granted fake microphone", async ({ page }) => {
+  await page.context().grantPermissions(["microphone"]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#toolbox");
+
+  const panel = page.getByRole("region", { name: "Peak / RMS meter" });
+  await expect(panel.getByRole("button", { name: "Start analysis" })).toBeEnabled();
+  await panel.getByRole("button", { name: "Start analysis" }).click();
+  await expect(panel.getByText("Analyzing")).toBeVisible({ timeout: 10_000 });
+  await panel.getByRole("button", { name: "Stop analysis" }).click();
+  await expect(panel.getByText("Stopped")).toBeVisible();
+});
