@@ -196,3 +196,41 @@ test("loads application assets under the restrictive static content policy", asy
   await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe("rgb(16, 19, 23)");
   expect(pageErrors).toEqual([]);
 });
+
+
+test("keeps small technical text above WCAG AA contrast on its intended surfaces", async ({ page }) => {
+  await page.goto("/");
+  const contrast = await page.evaluate(() => {
+    const luminance = (color: string) => {
+      const channels = color.match(/[\\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+      const linear = channels.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const ratio = (foreground: string, background: string) => {
+      const first = luminance(foreground);
+      const second = luminance(background);
+      return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+    };
+    const color = (selector: string) => getComputedStyle(document.querySelector(selector)!).color;
+    const background = (hex: string) => {
+      const value = hex.replace("#", "");
+      return `rgb(${parseInt(value.slice(0, 2), 16)}, ${parseInt(value.slice(2, 4), 16)}, ${parseInt(value.slice(4, 6), 16)})`;
+    };
+    return {
+      visualCaption: ratio(color(".visual-caption"), background("#101317")),
+      toolNumber: Math.min(
+        ratio(color(".tool-number"), background("#1a2027")),
+        ratio(color(".tool-number"), background("#151a20")),
+      ),
+      signalPanelMetadata: ratio(color(".signal-panel__bottom"), background("#151b21")),
+      footerMetadata: ratio(color(".site-footer > span"), background("#0d1115")),
+    };
+  });
+
+  for (const value of Object.values(contrast)) {
+    expect(value).toBeGreaterThanOrEqual(4.5);
+  }
+});
