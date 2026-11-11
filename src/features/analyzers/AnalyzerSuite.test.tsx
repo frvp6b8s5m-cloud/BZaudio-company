@@ -18,6 +18,7 @@ function makeSession() {
   return {
     analyser: {} as AnalyserNode,
     microphone: {} as never,
+    startedAtContextTime: 0,
     read: vi.fn(() => ({
       sampleRate: 48_000,
       contextTime: 1,

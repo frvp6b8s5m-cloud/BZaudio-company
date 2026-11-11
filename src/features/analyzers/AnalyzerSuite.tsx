@@ -86,14 +86,15 @@ function useLiveAnalysis(): LiveAnalysisController {
       lufsMeterRef.current = lufsMeter;
       setStatus("running");
       let lastUpdate = 0;
-      let lastContextTime: number | null = null;
+      let lastContextTime = session.startedAtContextTime;
       const update = (timestamp: number) => {
         if (sessionRef.current?.session !== session) return;
         if (timestamp - lastUpdate >= 50) {
           const next = session.read();
-          const elapsedSamples = lastContextTime === null
-            ? next.fftSize
-            : Math.max(0, Math.round((next.contextTime - lastContextTime) * next.sampleRate));
+          const elapsedSamples = Math.max(
+            0,
+            Math.round((next.contextTime - lastContextTime) * next.sampleRate),
+          );
           const freshSamples = elapsedSamples >= next.fftSize
             ? next.timeDomain
             : next.timeDomain.subarray(next.fftSize - elapsedSamples);

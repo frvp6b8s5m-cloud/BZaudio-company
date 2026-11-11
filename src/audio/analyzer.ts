@@ -15,6 +15,7 @@ export interface AnalyzerSnapshot {
 export interface AnalyzerSession {
   readonly microphone: MicrophoneSession;
   readonly analyser: AnalyserNode;
+  readonly startedAtContextTime: number;
   read: () => AnalyzerSnapshot;
   stop: () => Promise<void>;
 }
@@ -44,6 +45,7 @@ export async function startAnalyzerSession(
     return {
       microphone,
       analyser,
+      startedAtContextTime: microphone.context.currentTime,
       read: () => {
         analyser.getFloatTimeDomainData(timeDomain);
         analyser.getFloatFrequencyData(frequencyDbfs);

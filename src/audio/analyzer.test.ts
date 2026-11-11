@@ -47,6 +47,7 @@ describe("live analyzer audio session", () => {
     expect(fake.context.createAnalyser).toHaveBeenCalledOnce();
     expect(fake.source.connect).toHaveBeenCalledWith(fake.analyser);
     expect(fake.analyser.fftSize).toBe(16_384);
+    expect(session.startedAtContextTime).toBe(1.25);
 
     const snapshot = session.read();
     expect(snapshot.sampleRate).toBe(48_000);
