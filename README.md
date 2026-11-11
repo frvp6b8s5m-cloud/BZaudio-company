@@ -55,7 +55,7 @@ npm run build
 
 ## Browser tests
 
-The end-to-end suite runs against the production preview build using Playwright with Chromium, Firefox, and WebKit. The fake-microphone permission workflow runs in Chromium; browser-neutral navigation, calculator, generator, file playback, and accessibility checks run across all three engines.
+The end-to-end suite runs against the production preview build using Playwright with Chromium, Firefox, and WebKit. The fake-microphone workflow runs in Chromium. Signal output is verified in Chromium and WebKit; the headless Firefox runner does not complete AudioContext.resume without an audio output device, so that specific hardware-dependent test is skipped there. Navigation, calculator, file playback, and accessibility checks run across all three engines.
 
 ```bash
 npx playwright install chromium firefox webkit

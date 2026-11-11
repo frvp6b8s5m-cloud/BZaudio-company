@@ -70,7 +70,8 @@ test("calculator suite renders and updates a live speaker-delay result", async (
 });
 
 
-test("signal generator starts and stops in the browser", async ({ page }) => {
+test("signal generator starts and stops in the browser", async ({ page, browserName }) => {
+  test.skip(browserName === "firefox", "Headless Firefox in CI does not complete AudioContext.resume without an audio output device; audio output is covered in Chromium and WebKit.");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/#toolbox");
 
