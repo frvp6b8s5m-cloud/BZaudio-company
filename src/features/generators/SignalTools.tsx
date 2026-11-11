@@ -185,6 +185,7 @@ function PlaybackControls({
   onStop,
   startLabel,
   stopLabel,
+  startDisabled = false,
 }: {
   status: PlaybackStatus;
   error: string;
@@ -192,6 +193,7 @@ function PlaybackControls({
   onStop: () => void;
   startLabel: string;
   stopLabel: string;
+  startDisabled?: boolean;
 }) {
   return (
     <div className="generator-actions">
@@ -200,7 +202,7 @@ function PlaybackControls({
           type="button"
           className="generator-button generator-button--start"
           onClick={onStart}
-          disabled={status === "starting" || status === "playing"}
+          disabled={startDisabled || status === "starting" || status === "playing"}
         >
           {status === "starting" ? "Starting…" : startLabel}
         </button>
@@ -257,6 +259,7 @@ function SignalGenerator({ playback }: { playback: PlaybackController }) {
         error={error}
         startLabel="Start signal"
         stopLabel="Stop signal"
+        startDisabled={panelDisabled(playback, id)}
         onStart={() => void playback.start(id, () => startToneSession({
           frequencyHz: requiredNumber(frequency, "Frequency"),
           waveform,
@@ -291,6 +294,7 @@ function NoiseGenerator({ kind, playback }: { kind: NoiseKind; playback: Playbac
         error={error}
         startLabel={`Start ${kind} noise`}
         stopLabel={`Stop ${kind} noise`}
+        startDisabled={panelDisabled(playback, id)}
         onStart={() => void playback.start(id, () => startNoiseSession(kind, requiredNumber(level, "Output level")))}
         onStop={() => void playback.stop(id)}
       />
@@ -326,6 +330,7 @@ function FrequencySweepGenerator({ playback }: { playback: PlaybackController })
         error={error}
         startLabel="Start sweep"
         stopLabel="Stop sweep"
+        startDisabled={panelDisabled(playback, id)}
         onStart={() => void playback.start(id, () => startSweepSession({
           startFrequencyHz: requiredNumber(startFrequency, "Start frequency"),
           endFrequencyHz: requiredNumber(endFrequency, "End frequency"),
@@ -372,6 +377,7 @@ function TestToneGenerator({ playback }: { playback: PlaybackController }) {
         error={error}
         startLabel="Start test tone"
         stopLabel="Stop test tone"
+        startDisabled={panelDisabled(playback, id)}
         onStart={() => void playback.start(id, () => startToneSession({
           frequencyHz: requiredNumber(frequency, "Test tone frequency"),
           waveform: "sine",
