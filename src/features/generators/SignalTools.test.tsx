@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SignalTools } from "./SignalTools";
 
@@ -51,7 +51,8 @@ describe("Release 1 signal generators", () => {
     audioMocks.startToneSession.mockResolvedValue(session);
     render(<SignalTools />);
 
-    const start = screen.getByRole("button", { name: "Start signal" });
+    const signalPanel = screen.getByRole("region", { name: "Signal generator" });
+    const start = within(signalPanel).getByRole("button", { name: "Start signal" });
     fireEvent.click(start);
 
     await waitFor(() => {
@@ -60,11 +61,11 @@ describe("Release 1 signal generators", () => {
         waveform: "sine",
         levelDbfs: -20,
       });
-      expect(screen.getByText("Playing")).toBeInTheDocument();
+      expect(within(signalPanel).getByText("Playing")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Stop signal" }));
-    await waitFor(() => expect(screen.getByText("Stopped")).toBeInTheDocument());
+    fireEvent.click(within(signalPanel).getByRole("button", { name: "Stop signal" }));
+    await waitFor(() => expect(within(signalPanel).getByText("Stopped")).toBeInTheDocument());
     expect(session.stop).toHaveBeenCalledOnce();
   });
 
