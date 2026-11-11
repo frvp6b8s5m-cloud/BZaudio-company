@@ -29,8 +29,10 @@ Generators start only after an explicit user action, default to -20 dBFS, provid
 - FFT spectrum analyzer (log-frequency display)
 - Audio frequency analyzer (dominant FFT peak with interpolation)
 - Real-time analyzer (nominal 1/3-octave bands)
+- Feedback frequency finder (narrow spectral peak candidates)
+- LUFS loudness meter (mono BS.1770-5 integrated loudness with gating)
 
-Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. The remaining Release 1 tools are still in development.
+Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. Feedback candidates are not proof of acoustic feedback. The LUFS meter implements mono integrated loudness only; it does not report true peak (dBTP) or stereo channel weighting. The remaining Release 1 tools are still in development.
 
 ## Development
 

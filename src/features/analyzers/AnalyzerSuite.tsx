@@ -129,6 +129,13 @@ function useLiveAnalysis(): LiveAnalysisController {
   return { activeId, errorId, status, error, snapshot, start, stop };
 }
 
+function maximumFrequencyLabel(sampleRate?: number): string {
+  const maximum = sampleRate ? Math.min(20_000, sampleRate / 2) : 20_000;
+  return maximum >= 1000
+    ? `${(maximum / 1000).toFixed(maximum % 1000 === 0 ? 0 : 1)} kHz`
+    : `${Math.round(maximum)} Hz`;
+}
+
 function panelStatus(controller: LiveAnalysisController, id: string): AnalysisStatus {
   if (controller.activeId === id) return controller.status;
   return controller.errorId === id ? "error" : "stopped";
@@ -240,7 +247,7 @@ function FftAnalyzer({ controller }: { controller: LiveAnalysisController }) {
         onStop={() => void controller.stop(id)}
       />
       <SpectrumBars label="Live FFT spectrum, logarithmic frequency scale" bins={bins} />
-      <div className="analyzer-axis"><span>20 Hz</span><span>1 kHz</span><span>20 kHz</span></div>
+      <div className="analyzer-axis"><span>20 Hz</span><span>1 kHz</span><span>{maximumFrequencyLabel(snapshot?.sampleRate)}</span></div>
       <p className="analyzer-caution">FFT bin spacing: {snapshot ? (snapshot.sampleRate / snapshot.fftSize).toFixed(2) : "—"} Hz. Display is relative dBFS; microphone calibration is not applied.</p>
     </ToolPanel>
   );
@@ -366,6 +373,13 @@ function LufsAnalyzer({ controller }: { controller: LiveAnalysisController }) {
   const disabled = controller.activeId !== null && controller.activeId !== id;
   const snapshot = controller.snapshot;
   const loudness = snapshot?.integratedLufs ?? null;
+  const loudnessLabel = !snapshot
+    ? "Awaiting input"
+    : snapshot.loudnessBlockCount === 0
+      ? "Integrating…"
+      : loudness === null
+        ? "Below absolute gate"
+        : `${loudness.toFixed(1)} LUFS`;
 
   return (
     <ToolPanel
@@ -382,7 +396,7 @@ function LufsAnalyzer({ controller }: { controller: LiveAnalysisController }) {
       />
       <div className="analyzer-dominant">
         <span>INTEGRATED LOUDNESS</span>
-        <output>{loudness === null ? "Integrating…" : `${loudness.toFixed(1)} LUFS`}</output>
+        <output>{loudnessLabel}</output>
         <small>{snapshot ? `${snapshot.loudnessBlockCount} gated blocks collected · ${snapshot.sampleRate} Hz` : "Awaiting microphone input"}</small>
       </div>
       <p className="analyzer-caution">Mono BS.1770-5 integrated loudness only. This does not calculate true peak (dBTP), stereo channel weighting, or calibrated acoustic SPL. Pure tones are not a reliable subjective-loudness test.</p>
