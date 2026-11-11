@@ -12,7 +12,7 @@ function spectrumWithPeak(
   frequencyHz: number,
   peakDbfs = -6,
 ): Float32Array {
-  const values = new Float32Array(fftSize / 2).fill(-100);
+  const values = new Float32Array(fftSize / 2).fill(Number.NEGATIVE_INFINITY);
   const bin = Math.round(frequencyHz / (sampleRate / fftSize));
   values[bin - 1] = peakDbfs - 12;
   values[bin] = peakDbfs;
