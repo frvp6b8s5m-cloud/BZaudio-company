@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, typecheck, test, and build
+    name: Lint, typecheck, unit test, browser test, and build
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -27,9 +27,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Lint
         run: npm run lint
@@ -37,11 +41,39 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Test
+      - name: Unit tests
         run: npm test
 
       - name: Production build
         run: npm run build
+
+      - name: Browser viewport tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Production preview smoke test
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/bzaudio-vite.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bzaudio-vite.log
+          exit 1
 
       - name: Dependency security audit
         run: npm audit --audit-level=high

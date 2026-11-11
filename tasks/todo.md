@@ -7,21 +7,21 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 1: Add project scaffold
 **Description:** Establish the Vite, React, and strict TypeScript foundation.
 **Acceptance criteria:**
-- [ ] App starts with `npm run dev` and builds with `npm run build`.
-- [ ] Strict TypeScript checking is enabled.
-- [ ] Vite base path supports repository Pages URL.
-**Verification:** Install from lockfile; run dev smoke check, typecheck, and production build.
+- [x] App starts with `npm run dev` and builds with `npm run build`.
+- [x] Strict TypeScript checking is enabled.
+- [x] Vite uses a relative asset base for repository Pages hosting.
+**Verification:** Locked install, CI development-server smoke test, typecheck, and production build passed.
 **Dependencies:** Approved plan.
 **Files likely touched:** `package.json`, lockfile, `index.html`, `vite.config.ts`, `tsconfig*.json`, `src/main.tsx`.
 **Estimated scope:** Medium.
 
 ### Task 2: Establish quality tooling
-**Description:** Add linting, formatting conventions, Vitest, and scripts.
+**Description:** Add linting, test conventions, Vitest, and quality scripts.
 **Acceptance criteria:**
-- [ ] `npm run lint`, `npm run typecheck`, and `npm run test` exist.
-- [ ] A sample test proves the test runner works.
-- [ ] CI commands are reproducible from a clean install.
-**Verification:** Run all scripts locally.
+- [x] `npm run lint`, `npm run typecheck`, and `npm run test` exist.
+- [x] App component tests prove the test runner works.
+- [x] CI uses `npm ci` from the committed lockfile.
+**Verification:** CI passed lint, strict typecheck, Vitest, build, and `npm audit --audit-level=high`.
 **Dependencies:** Task 1.
 **Files likely touched:** package scripts/config, test config, sample test.
 **Estimated scope:** Medium.
@@ -29,10 +29,10 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 3: Add design foundation and app shell
 **Description:** Build the responsive Studio visual shell and primary navigation.
 **Acceptance criteria:**
-- [ ] Home, Toolbox, About, and Admin handoff routes render.
-- [ ] Keyboard navigation and visible focus work.
-- [ ] Layout adapts to mobile and desktop widths.
-**Verification:** Component tests and browser smoke test.
+- [x] Home, Toolbox, Approach, About, and Admin handoff sections render through working anchor navigation.
+- [x] Navigation uses native links and visible `:focus-visible` styling.
+- [x] Responsive breakpoints cover mobile, tablet, and desktop layouts.
+**Verification:** Component tests assert all section targets; CSS review confirms responsive breakpoints and reduced-motion support. CI smoke-checks the Vite dev server.
 **Dependencies:** Task 1.
 **Files likely touched:** `src/app/`, `src/components/`, `src/styles/`.
 **Estimated scope:** Medium.
@@ -40,10 +40,10 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 4: Add About and Admin handoff content
 **Description:** Explain BZaudio's mission and creator credit; route admin users to GitHub-native controls.
 **Acceptance criteria:**
-- [ ] About page describes the approved goal.
-- [ ] Exact creator credit reads “Created by BENTLEY ZERWAS.”
-- [ ] Admin page clearly states it is public and contains no privileged client-side actions.
-**Verification:** Content assertions and manual browser check.
+- [x] About section describes the approved goal.
+- [x] Exact creator credit reads “CREATED BY BENTLEY ZERWAS.”
+- [x] Admin handoff states the site is public and contains no privileged client-side actions; link points to `BZaudio-company`.
+**Verification:** Component tests assert creator credit, public-admin boundary, and primary repository link.
 **Dependencies:** Task 3.
 **Files likely touched:** `src/content/`, app routes/components.
 **Estimated scope:** Small.
@@ -51,9 +51,9 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 5: Add CI workflow
 **Description:** Run quality checks on pull requests and relevant pushes.
 **Acceptance criteria:**
-- [ ] Workflow runs lint, typecheck, tests, and build.
-- [ ] Workflow uses least-privilege permissions.
-- [ ] No secrets are required for CI.
+- [x] Workflow runs lint, typecheck, tests, build, dev-server smoke test, and dependency audit.
+- [x] Workflow uses `contents: read` only.
+- [x] CI requires no secrets.
 **Verification:** Inspect workflow and confirm a GitHub Actions run passes.
 **Dependencies:** Task 2.
 **Files likely touched:** `.github/workflows/ci.yml`.
@@ -62,108 +62,173 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 ### Task 6: Add gated GitHub Pages deployment workflow
 **Description:** Configure build and Pages artifact deployment with production publication gated on repository settings and approval.
 **Acceptance criteria:**
-- [ ] Workflow follows GitHub Pages artifact deployment.
-- [ ] Deployment permissions are scoped to the Pages job.
-- [ ] Deployment does not run until Pages prerequisites are verified.
-**Verification:** Workflow validation and, after settings are ready, a non-production Pages verification.
+- [x] Manual workflow builds and uploads a GitHub Pages artifact.
+- [x] `pages: write` and `id-token: write` are scoped to the deploy job.
+- [x] Deploy job requires public visibility, `main`, and explicit `publish: true`; Pages settings/live deployment remain deferred to release.
+**Verification:** Pages artifact preflight passed without publishing. Actual Pages site configuration and live deployment remain release-stage work requiring separate approval.
 **Dependencies:** Task 5.
 **Files likely touched:** `.github/workflows/deploy-pages.yml`.
 **Estimated scope:** Medium.
 
 ### Checkpoint A — Foundation review
-- [ ] Tasks 1–6 verified.
-- [ ] Full Definition of Done checklist satisfied.
-- [ ] Human reviews the foundation before Phase 2.
+- [x] Tasks 1–6 technical foundation criteria verified.
+- [x] Technical Definition of Done checks pass; human review is the remaining approval gate.
+- [x] Human reviewed and approved the foundation before Phase 2 on 2026-11-10.
 
 ## Phase 2 — Shared engineering foundations
 
 ### Task 7: Typed unit and validation primitives
 **Acceptance criteria:**
-- [ ] Domain values carry explicit units.
-- [ ] Invalid, non-finite, and out-of-range inputs are handled consistently.
-- [ ] Formula helpers have known-answer and boundary tests.
-**Verification:** Unit tests.
+- [x] Domain values carry explicit units through branded TypeScript types.
+- [x] Invalid, non-finite, and out-of-range inputs are handled consistently.
+- [x] Formula helpers have known-answer and boundary tests.
+**Verification:** Vitest coverage for frequency, distance, decibels, sample rate, amplitude gain conversions, and milliseconds-to-samples boundaries. CI passed.
 **Dependencies:** Checkpoint A.
 **Files likely touched:** `src/calculations/`, `tests/unit/`.
 **Estimated scope:** Medium.
 
 ### Task 8: Browser audio lifecycle foundation
 **Acceptance criteria:**
-- [ ] Audio contexts and media streams have explicit lifecycle cleanup.
-- [ ] Permission denial, no device, and unsupported APIs show clear states.
-- [ ] No microphone capture starts without user action.
-**Verification:** Unit/integration tests plus browser permission-denial test.
+- [x] Audio contexts and media streams have explicit lifecycle cleanup.
+- [x] Permission denial, no device, and unsupported APIs show clear states.
+- [x] No microphone capture starts without user action.
+**Verification:** Vitest covers explicit start, idempotent stop, track/context cleanup, permission denial, missing devices, unsupported APIs, and cleanup after context creation failure. CI passed. Real-browser permission-denial automation remains part of browser hardening.
 **Dependencies:** Checkpoint A.
 **Files likely touched:** `src/audio/`, tests.
 **Estimated scope:** Medium.
 
 ### Task 9: Reusable visualization and tool shell
 **Acceptance criteria:**
-- [ ] Shared tool layout, meter, and chart primitives are accessible.
-- [ ] Visualizations do not rely on color alone.
-- [ ] Responsive behavior is verified.
-**Verification:** Component and browser tests.
+- [x] Shared tool layout, meter, and spectrum primitives expose accessible labels and numeric values.
+- [x] Visualizations communicate level/height and numeric summaries, not color alone.
+- [x] Responsive behavior is verified in Chromium at desktop (1440px), tablet (768px), mobile (390px), and minimum supported mobile (320px) viewports.
+**Verification:** Vitest component tests and Playwright Chromium viewport/navigation tests pass in CI. Playwright reports and traces are retained on failure. Real-browser microphone permission-denial testing is deferred until a microphone control is integrated into the app.
 **Dependencies:** Tasks 7–8.
 **Files likely touched:** `src/components/`, `src/features/shared/`.
 **Estimated scope:** Medium.
 
 ### Checkpoint B — Engineering review
-- [ ] Tasks 7–9 verified.
-- [ ] Human reviews shared foundations before tool batches.
+- [x] Tasks 7–9 technical acceptance criteria verified; browser-level microphone permission denial remains a later integration check when a microphone UI exists.
+- [x] Human approved all remaining planned BZaudio project work on 2026-11-10.
 
 ## Phase 3 — Release 1 tools
 
 ### Task 10: Deterministic calculator tools
-**Acceptance criteria:** [ ] Speaker delay, subwoofer alignment, crossover, coverage, SPL/distance, decibel, and gain/voltage calculations have formulas, units, validation, and tests.
-**Verification:** Reference calculations and boundary tests.
+**Acceptance criteria:** [x] Seven calculators have explicit formulas, units, input validation, visible assumptions, accessible outputs, and reference/boundary tests.
+**Verification:** CI run 42929172068 passed lint, strict typecheck, 44 unit/component tests across 6 files, 6 Chromium browser tests, production build, dev-server smoke test, and npm audit.
 **Dependencies:** Checkpoint B.
-**Files likely touched:** `src/calculations/`, `src/features/`, tests.
-**Estimated scope:** Split into smaller per-tool tasks before implementation.
+**Files likely touched:** `src/calculations/engineering.ts`, `src/calculations/engineering.test.ts`, `src/features/calculators/`, `src/App.tsx`, tests.
+**Estimated scope:** Seven small vertical slices, delivered in two commits.
+
+#### Task 10.1: Speaker delay calculator
+- [x] Calculate propagation delay from distance and temperature-adjusted speed of sound.
+- [x] Show speed-of-sound assumption, milliseconds, and formula.
+- [x] Validate finite non-negative distance and supported temperature range.
+- **Verification:** Reference values at 0°C and 20°C plus boundary tests.
+
+#### Task 10.2: Subwoofer alignment calculator
+- [x] Accept measured main and sub arrival times in milliseconds.
+- [x] Identify the earlier-arriving source and calculate its required delay.
+- [x] Avoid automatic polarity or phase recommendations.
+- **Verification:** Main-earlier, sub-earlier, equal-arrival, and invalid-value tests.
+
+#### Task 10.3: Crossover starting-point calculator
+- [x] Accept subwoofer upper and main-speaker lower operating limits.
+- [x] Return no-overlap state when the ranges do not overlap.
+- [x] Suggest geometric midpoint only when overlap exists.
+- **Verification:** Overlap, boundary-touch, no-overlap, and invalid-value tests.
+
+#### Task 10.4: Speaker coverage calculator
+- [x] Calculate ideal coverage width from throw distance and horizontal angle.
+- [x] State symmetric-angle/free-field assumptions.
+- **Verification:** Known-angle reference and invalid-angle boundaries.
+
+#### Task 10.5: SPL and distance calculator
+- [x] Calculate SPL at a new distance and distance for a target SPL.
+- [x] State inverse-square/free-field limitations.
+- **Verification:** Doubling distance produces approximately -6.02 dB; inverse operation round-trips.
+
+#### Task 10.6: Decibel calculator
+- [x] Convert amplitude and power ratios to dB and back.
+- [x] Keep amplitude and power modes explicitly distinct.
+- **Verification:** 2× amplitude, 2× power, unity, and invalid-value tests.
+
+#### Task 10.7: Gain and voltage calculator
+- [x] Calculate voltage gain in dB and output voltage from input voltage plus gain.
+- [x] Validate positive voltage and finite gain.
+- **Verification:** 2× voltage, 0 dB, and inverse calculation tests.
 
 ### Task 11: Signal and noise generators
-**Acceptance criteria:** [ ] Signal, pink noise, white noise, sweep, and test tone generation are controllable and stop cleanly.
-**Verification:** Audio graph tests and browser playback checks.
+**Acceptance criteria:** [x] Five generator tools produce controllable output, default to a conservative level, start only after user action, serialize playback to one active output, and release audio resources cleanly.
+**Verification:** CI run 42930623174 passed lint, strict typecheck, 57 unit/component tests across 8 files, 7 Chromium browser tests, production build, dev-server smoke test, and npm audit.
 **Dependencies:** Task 8.
-**Files likely touched:** `src/audio/`, `src/features/`, tests.
-**Estimated scope:** Split into smaller per-tool tasks before implementation.
+**Files likely touched:** `src/audio/`, `src/features/generators/`, tests.
+**Estimated scope:** Five small vertical slices.
+
+#### Task 11.1: Signal generator
+- [x] Sine, square, sawtooth, and triangle waveforms.
+- [x] Frequency input 20 Hz–20 kHz and output level -60 to 0 dBFS.
+- [x] Explicit Start/Stop controls and lifecycle cleanup.
+- **Verification:** 8 audio-engine tests, 5 generator UI tests, and a real Chromium signal start/stop test. Shared playback controller prevents two generators from running simultaneously.
+
+#### Task 11.2: Pink noise generator
+- [x] Generate bounded pink-noise buffer and loop during playback.
+- [x] Conservative -20 dBFS default and explicit stop.
+- **Verification:** Deterministic sample tests and looping buffer-source tests.
+
+#### Task 11.3: White noise generator
+- [x] Generate bounded white-noise buffer and loop during playback.
+- [x] Conservative -20 dBFS default and explicit stop.
+- **Verification:** Deterministic sample tests and looping buffer-source tests.
+
+#### Task 11.4: Frequency sweep
+- [x] Sine sweep from configurable start to end frequency over a bounded duration.
+- [x] Use a logarithmic frequency ramp and stop/close automatically at the end.
+- **Verification:** Ramp scheduling and cleanup tests.
+
+#### Task 11.5: Audio test tone generator
+- [x] Presets at 100 Hz, 1 kHz, and 10 kHz.
+- [x] Default 1 kHz at -20 dBFS; adjustable level from -60 to 0 dBFS.
+- [x] Explicit start/stop; warn users to begin with downstream gain low.
+- **Verification:** Preset mapping, gain, and browser playback control tests.
 
 ### Task 12: Analysis and metering tools
-**Acceptance criteria:** [ ] RTA, FFT, frequency, LUFS, peak/RMS, phase/polarity, and feedback analysis have stated limits and meaningful output.
-**Verification:** Deterministic signal fixtures, reference comparisons, and browser tests.
+**Acceptance criteria:** [x] RTA, FFT, frequency, LUFS, peak/RMS, phase/polarity, and feedback analysis have stated limits and meaningful output.
+**Verification:** CI run 42956664767 passed lint, strict typecheck, 91 unit/component tests across 14 files, 33 Playwright tests across Chromium, Firefox, and WebKit (3 documented headless audio skips), production build, production-preview smoke test, and npm audit. Synthetic fixtures cover phase/polarity and analyzer calculations; stereo microphone tests verify independent channel routing and cleanup.
 **Dependencies:** Tasks 8–9.
-**Files likely touched:** `src/audio/`, `src/features/`, tests.
-**Estimated scope:** Split into smaller per-tool tasks before implementation.
+**Files:** `src/audio/`, `src/calculations/dsp/`, `src/features/analyzers/`.
 
 ### Task 13: Audio file player
-**Acceptance criteria:** [ ] Local audio files can be selected and played without upload to a server; unsupported formats and errors are handled.
-**Verification:** Browser tests with fixture audio.
+**Acceptance criteria:** [x] Local audio files can be selected and played without upload to a server; unsupported formats and errors are handled.
+**Verification:** CI run 42956664767 includes cross-engine tests that load a generated WAV fixture and confirm native playback controls and one-second duration. Component tests verify local object URL creation, replacement/unmount cleanup, and non-audio rejection.
 **Dependencies:** Checkpoint B.
-**Files likely touched:** `src/features/`, tests.
-**Estimated scope:** Medium.
+**Files:** `src/features/player/AudioFilePlayer.tsx`, `audio-file-player.css`, and tests.
 
 ### Checkpoint C — Release 1 review
-- [ ] All 20 Release 1 tools are implemented and verified; task groups are decomposed into individual tool tasks before execution.
-- [ ] Human approves release candidate.
+- [x] All 20 Release 1 tools are implemented and verified; task groups are decomposed into individual tool tasks before execution.
+- [x] User approved continued implementation and Phase 4 checks on 2026-11-11.
+- [x] Release 1 review confirmed implemented analyzers, generators, seven calculators, and local audio file playback.
+- [x] Human approves the Release 1 candidate for continued release hardening; production publication remains a separate gate.
 
 ## Phase 4 — Hardening and release
 
 ### Task 14: Accessibility, browser, and performance audit
-**Acceptance criteria:** [ ] Keyboard, screen-reader labels, contrast, mobile layouts, and supported-browser behavior are checked.
-**Verification:** Automated and manual audit.
+**Acceptance criteria:** [x] Automated keyboard navigation, accessible control names/landmarks, key small-text WCAG AA contrast pairs, 320/390/768/1440px responsive layouts, and browser-neutral flows are verified in Chromium, Firefox, and WebKit. Manual VoiceOver/NVDA review and real-device audio verification remain release follow-ups.
+**Verification:** CI run 42956664767: 33 Playwright tests passed across three engines; three documented audio tests are skipped where the headless browser lacks a fake audio device. Small technical text contrast checks are at least 4.5:1. Production bundle: 65.57 kB JS + 5.48 kB CSS + 0.49 kB HTML gzip.
 **Dependencies:** Checkpoint C.
 **Files likely touched:** App source, tests, docs.
 **Estimated scope:** Medium.
 
 ### Task 15: Security and dependency audit
-**Acceptance criteria:** [ ] No secrets, unsafe HTML injection, unneeded permissions, or unreviewed high-risk dependencies.
-**Verification:** Native package audit, workflow permission review, staged-diff secret scan.
+**Acceptance criteria:** [x] Targeted scan of 48 source/config files found no private-key, GitHub-token, AWS-key, Stripe-secret, unsafe-HTML, or dynamic-code patterns; no environment or private-key files are tracked. CI and build workflows use read-only contents permissions; only the separately gated Pages deploy job receives pages/id-token write. Static site includes a restrictive CSP and strict referrer policy.
+**Verification:** CI run 42956664767 completed `npm audit --audit-level=high` with 0 vulnerabilities. This is a targeted repository scan, not a guarantee against every possible secret format.
 **Dependencies:** Checkpoint C.
 **Files likely touched:** Config and documentation only if findings require changes.
 **Estimated scope:** Small.
 
 ### Task 16: Pages deployment and rollback verification
-**Acceptance criteria:** [ ] Correct project base path, deep links, artifact deployment, and rollback procedure are verified.
-**Verification:** GitHub Actions run and live smoke test after explicit deployment approval.
+**Acceptance criteria:** [ ] Correct project base path, deep links, Pages artifact deployment, Pages settings, and rollback procedure are verified. The app uses a relative Vite base path and hash navigation; production Pages settings and live deployment remain unverified.
+**Verification:** CI verifies the production preview build and client-side hash navigation. Pages deployment and rollback checks are intentionally deferred until the final production-release gate.
 **Dependencies:** Tasks 6, 14, 15; repository Pages prerequisites.
 **Files likely touched:** Workflows and deployment docs.
 **Estimated scope:** Medium.

@@ -1,6 +1,12 @@
+import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
+import { SignalTools } from "./features/generators/SignalTools";
+import { AnalyzerSuite } from "./features/analyzers/AnalyzerSuite";
+import { AudioFilePlayer } from "./features/player/AudioFilePlayer";
 import {
   Activity,
   ArrowDownRight,
+  Calculator,
+  FileAudio,
   ArrowUpRight,
   AudioLines,
   AudioWaveform,
@@ -15,21 +21,40 @@ const toolGroups = [
     number: "01",
     title: "Analyze",
     description: "See what your system is doing, from spectrum and level to phase and feedback.",
-    tools: "RTA · FFT · LUFS · Peak / RMS",
+    tools: "RTA · FFT · Frequency · LUFS · Peak / RMS · Feedback · Phase",
+    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: RadioTower,
     number: "02",
     title: "System design",
     description: "Make informed setup decisions with practical calculations for real rooms and rigs.",
-    tools: "Delay · Crossover · Coverage · Alignment",
+    tools: "Delay · Crossover · Coverage · Alignment · SPL / Distance",
+    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: AudioWaveform,
     number: "03",
     title: "Generate",
     description: "Create the signals you need for checking, testing, and tuning an audio system.",
-    tools: "Pink noise · Test tones · Sweeps",
+    tools: "Signal · Pink / White noise · Sweeps · Test tones",
+    status: "PARTIALLY AVAILABLE",
+  },
+  {
+    icon: Calculator,
+    number: "04",
+    title: "Calculate",
+    description: "Work through common audio math with transparent formulas and practical units.",
+    tools: "Decibels · Gain · Voltage",
+    status: "PARTIALLY AVAILABLE",
+  },
+  {
+    icon: FileAudio,
+    number: "05",
+    title: "Audio utilities",
+    description: "Load local reference audio and work with files without sending them to a server.",
+    tools: "Audio file player",
+    status: "PARTIALLY AVAILABLE",
   },
 ];
 
@@ -91,6 +116,7 @@ function SignalTrace() {
 export default function App() {
   return (
     <div className="site-shell">
+      <a className="skip-link" href="#home">Skip to main content</a>
       <header className="site-header">
         <a className="brand" href="#home" aria-label="BZaudio home">
           <span className="brand-mark"><AudioLines size={22} strokeWidth={2.2} /></span>
@@ -167,11 +193,15 @@ export default function App() {
                   <h3>{group.title}</h3>
                   <p>{group.description}</p>
                   <div className="tool-group__tools">{group.tools}</div>
-                  <span className="tool-status">IN DEVELOPMENT</span>
+                  <span className="tool-status">{group.status}</span>
                 </article>
               );
             })}
           </div>
+          <CalculatorSuite />
+          <SignalTools />
+          <AnalyzerSuite />
+          <AudioFilePlayer />
           <div className="toolbox-note">
             <Gauge size={18} />
             <p><strong>Built for accuracy, not guesswork.</strong> Calculations will show their units, formulas, assumptions, and limitations.</p>
@@ -222,7 +252,7 @@ export default function App() {
               accounts or privileged controls.
             </p>
           </div>
-          <a className="text-link" href="https://github.com/frvp6b8s5m-cloud/BZaudio-the-final-rendition-">
+          <a className="text-link" href="https://github.com/frvp6b8s5m-cloud/BZaudio-company">
             Open project repository <ArrowUpRight size={16} />
           </a>
         </section>

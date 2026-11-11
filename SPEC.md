@@ -5,7 +5,7 @@
 **Audience:** Live-sound professionals first; students, musicians, recording engineers, and audio enthusiasts second  
 **Visual direction:** Studio  
 **Business direction:** Freemium intent; monetization and entitlement enforcement deferred until a secure backend is separately approved  
-**Repository:** `frvp6b8s5m-cloud/BZaudio-the-final-rendition-`
+**Primary repository:** `frvp6b8s5m-cloud/BZaudio-company`
 
 ## Objective
 
@@ -171,12 +171,12 @@ export function decibelsToLinearGain(decibels: number): number {
 
 ## Repository visibility and release sequence
 
-- Keep the repository private throughout development, review, and testing.
-- The user intends to change it to public only at the end, when the release candidate is ready for publication.
-- GitHub Actions CI can run while private. Public GitHub Pages publication on GitHub Free must wait until the repository is public; verify the current plan and Pages eligibility at release time.
+- `BZaudio-company` is public by explicit user authorization during the repository migration on 2026-11-10. Do not change visibility again without explicit approval.
+- Public repository visibility does not authorize production deployment. GitHub Pages publication remains gated by the manual workflow and separate release approval.
+- Verify the current plan, Pages eligibility, and repository Pages configuration at release time.
 - Do not change visibility automatically or before the final release checkpoint.
 
 ## Open questions
 - Registered domain and DNS provider are not yet supplied.
 - A separate admin subdomain/site cannot be configured until a real domain is supplied; the admin experience will initially link to GitHub-native controls.
-- Repository remains private during development by user decision. The user will make it public at the end, before final public GitHub Pages publication if required by the current plan.
+- Repository `BZaudio-company` is public by explicit user authorization during migration; production deployment remains separately gated.
