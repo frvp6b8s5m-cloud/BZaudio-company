@@ -192,5 +192,6 @@ test("loads application assets under the restrictive static content policy", asy
   expect(policy).toContain("default-src 'self'");
   expect(policy).toContain("object-src 'none'");
   expect(policy).toContain("media-src 'self' blob:");
+  await expect.poll(() => page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe("rgb(16, 19, 23)");
   expect(pageErrors).toEqual([]);
 });

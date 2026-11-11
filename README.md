@@ -55,10 +55,11 @@ npm run build
 
 ## Browser tests
 
-The end-to-end suite uses Playwright with Chromium, Firefox, and WebKit. The fake-microphone permission workflow runs in Chromium; browser-neutral navigation, calculator, generator, file playback, and accessibility checks run across all three engines.
+The end-to-end suite runs against the production preview build using Playwright with Chromium, Firefox, and WebKit. The fake-microphone permission workflow runs in Chromium; browser-neutral navigation, calculator, generator, file playback, and accessibility checks run across all three engines.
 
 ```bash
 npx playwright install chromium firefox webkit
+npm run build
 npm run test:e2e
 ```
 
