@@ -164,7 +164,7 @@ async function startWithContext(
 }
 
 /** Starts a tone only when called from an explicit user action. */
-export function startToneSession(
+export async function startToneSession(
   options: ToneOptions,
   runtime?: AudioOutputRuntime,
 ): Promise<AudioOutputSession> {
@@ -185,7 +185,7 @@ export function startToneSession(
 }
 
 /** Starts a two-second in-memory noise buffer in a loop. */
-export function startNoiseSession(
+export async function startNoiseSession(
   kind: NoiseKind,
   levelDbfs: number,
   runtime?: AudioOutputRuntime,
@@ -215,7 +215,7 @@ export function startNoiseSession(
 }
 
 /** Starts an exponential/logarithmic sine sweep with a scheduled end time. */
-export function startSweepSession(
+export async function startSweepSession(
   options: SweepOptions,
   runtime?: AudioOutputRuntime,
 ): Promise<AudioOutputSession> {
