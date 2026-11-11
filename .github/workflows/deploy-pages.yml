@@ -1,13 +1,10 @@
 name: GitHub Pages
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      publish:
-        description: Explicitly authorize publishing the built site to GitHub Pages
-        required: true
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -22,9 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pages: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -38,6 +39,13 @@ jobs:
       - name: Build static site
         run: npm run build
 
+      - name: Verify built entry point and assets
+        run: |
+          test -s dist/index.html
+          grep -Eq 'src="[^"]+\.js"' dist/index.html
+          test -d dist/assets
+          find dist/assets -maxdepth 1 -type f | grep -Eq '\.(js|css)$'
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -45,7 +53,7 @@ jobs:
 
   deploy:
     name: Publish GitHub Pages
-    if: ${{ github.repository_visibility == 'public' && github.ref == 'refs/heads/main' && inputs.publish }}
+    if: ${{ github.repository_visibility == 'public' && github.ref == 'refs/heads/main' }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
