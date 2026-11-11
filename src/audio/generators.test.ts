@@ -26,11 +26,12 @@ function createFakeRuntime(): {
   gain: GainNode;
   buffer: AudioBuffer;
 } {
+  const setValueCurveAtTime = vi.fn();
   const oscillator = {
     type: "sine",
     frequency: {
       setValueAtTime: vi.fn(),
-      setValueCurveAtTime: vi.fn(),
+      setValueCurveAtTime,
     },
     connect: vi.fn(),
     start: vi.fn(),
@@ -91,6 +92,7 @@ function createFakeRuntime(): {
     bufferSource,
     gain,
     buffer,
+    setValueCurveAtTime,
   };
 }
 
@@ -176,11 +178,11 @@ describe("Web Audio output sessions", () => {
       fake.runtime,
     );
 
-    const curve = fake.oscillator.frequency.setValueCurveAtTime.mock.calls[0][0] as Float32Array;
+    const curve = fake.setValueCurveAtTime.mock.calls[0][0] as Float32Array;
     expect(curve.length).toBe(128);
     expect(curve[0]).toBeCloseTo(20, 3);
     expect(curve[curve.length - 1]).toBeCloseTo(20_000, 1);
-    expect(fake.oscillator.frequency.setValueCurveAtTime).toHaveBeenCalledWith(curve, 10, 5);
+    expect(fake.setValueCurveAtTime).toHaveBeenCalledWith(curve, 10, 5);
     expect(fake.oscillator.stop).toHaveBeenCalledWith(15);
 
     await session.stop();
