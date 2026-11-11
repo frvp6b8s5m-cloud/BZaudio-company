@@ -47,12 +47,19 @@ Deliver the BZaudio static live-sound toolbox using React, TypeScript, Vite, bro
 - [x] Formula and audio primitives have deterministic tests.
 - [x] Browser capability and permission failures are handled.
 - [x] Visual components expose accessible semantics and numeric values; responsive behavior passes Playwright Chromium viewport tests.
-- [ ] Human reviews the shared foundations before completing tool batches.
+- [x] Human approved all remaining planned BZaudio project work on 2026-11-10, including shared foundations and planned implementation phases.
 - Playwright is approved and installed as a development dependency. CI installs Chromium and runs the responsive browser suite. Browser-level microphone permission-denial testing remains deferred until a microphone UI is integrated.
 
 ### Phase 3 — Release 1 tool slices
 Implement in testable batches:
-- Batch 1: calculators and deterministic engineering tools.
+- Batch 1: seven deterministic calculators — speaker delay, subwoofer alignment, crossover starting point, speaker coverage, SPL/distance, decibel, and gain/voltage.
+  - Speaker delay uses temperature-adjusted sound speed (331.3 + 0.606 × °C m/s; default 20°C).
+  - Subwoofer alignment uses measured arrival times and delays the earlier-arriving source; it does not guess polarity or infer phase from distance alone.
+  - Crossover suggests the geometric midpoint of the overlapping sub/top operating ranges; it is not an acoustic optimization or preset.
+  - Coverage width assumes an ideal symmetric horizontal angle in a free field.
+  - SPL/distance uses the free-field inverse-square approximation and excludes room reflections, directivity, compression, and atmospheric absorption.
+  - Decibel conversions explicitly distinguish amplitude (20 log10) and power (10 log10) ratios.
+  - Voltage gain uses 20 log10(Vout/Vin); it does not imply a specific amplifier load or power.
 - Batch 2: signal/noise/test generators.
 - Batch 3: audio input, metering, spectrum, phase, and feedback-analysis tools.
 
