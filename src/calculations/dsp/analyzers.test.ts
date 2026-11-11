@@ -88,8 +88,10 @@ describe("FFT spectrum analysis", () => {
     values[398] = -48;
     values[402] = -50;
     values[700] = -35;
-    values[699] = -37;
-    values[701] = -38;
+    values[699] = -36;
+    values[701] = -36;
+    values[698] = -36;
+    values[702] = -36;
     const candidates = findFeedbackCandidates(values, sampleRate, fftSize);
     expect(candidates).toHaveLength(1);
     expect(candidates[0].frequencyHz).toBeCloseTo(400 * sampleRate / fftSize, 0);
