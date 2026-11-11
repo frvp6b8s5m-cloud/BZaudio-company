@@ -293,7 +293,7 @@ function FrequencySweepGenerator() {
           startFrequencyHz: requiredNumber(startFrequency, "Start frequency"),
           endFrequencyHz: requiredNumber(endFrequency, "End frequency"),
           durationSeconds: requiredNumber(duration, "Duration"),
-          levelDbfs: Number(level),
+          levelDbfs: requiredNumber(level, "Output level"),
         }))}
         onStop={() => void playback.stop()}
       />
@@ -336,7 +336,7 @@ function TestToneGenerator() {
         onStart={() => void playback.start(() => startToneSession({
           frequencyHz: requiredNumber(frequency, "Test tone frequency"),
           waveform: "sine",
-          levelDbfs: Number(level),
+          levelDbfs: requiredNumber(level, "Output level"),
         }))}
         onStop={() => void playback.stop()}
       />
