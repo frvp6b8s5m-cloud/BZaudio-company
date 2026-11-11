@@ -1,10 +1,12 @@
 import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
 import { SignalTools } from "./features/generators/SignalTools";
 import { AnalyzerSuite } from "./features/analyzers/AnalyzerSuite";
+import { AudioFilePlayer } from "./features/player/AudioFilePlayer";
 import {
   Activity,
   ArrowDownRight,
   Calculator,
+  FileAudio,
   ArrowUpRight,
   AudioLines,
   AudioWaveform,
@@ -44,6 +46,14 @@ const toolGroups = [
     title: "Calculate",
     description: "Work through common audio math with transparent formulas and practical units.",
     tools: "Decibels · Gain · Voltage",
+    status: "PARTIALLY AVAILABLE",
+  },
+  {
+    icon: FileAudio,
+    number: "05",
+    title: "Audio utilities",
+    description: "Load local reference audio and work with files without sending them to a server.",
+    tools: "Audio file player",
     status: "PARTIALLY AVAILABLE",
   },
 ];
@@ -190,6 +200,7 @@ export default function App() {
           <CalculatorSuite />
           <SignalTools />
           <AnalyzerSuite />
+          <AudioFilePlayer />
           <div className="toolbox-note">
             <Gauge size={18} />
             <p><strong>Built for accuracy, not guesswork.</strong> Calculations will show their units, formulas, assumptions, and limitations.</p>
