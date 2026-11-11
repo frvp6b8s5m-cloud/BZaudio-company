@@ -1,3 +1,4 @@
+import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
 import {
   Activity,
   ArrowDownRight,

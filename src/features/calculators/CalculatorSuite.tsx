@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../../components/tooling.css";
 import { ToolPanel } from "../../components/ToolPanel";
 import {
   calculateCoverageWidth,
@@ -21,7 +22,7 @@ interface NumberFieldProps {
   unit: string;
   min?: number;
   max?: number;
-  step?: number;
+  step?: number | "any";
   onChange: (value: string) => void;
 }
 
@@ -40,6 +41,7 @@ function NumberField({
       <span className="calculator-field__control">
         <input
           type="number"
+          aria-label={label}
           inputMode="decimal"
           value={value}
           min={min}

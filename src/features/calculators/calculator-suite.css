@@ -149,7 +149,7 @@
 
 .calculator-caution {
   color: #9a9b88;
-  font: 0.7rem/1.6 var(--sans);
+  font: 0.7rem/1.6 sans-serif;
 }
 
 @media (max-width: 850px) {
