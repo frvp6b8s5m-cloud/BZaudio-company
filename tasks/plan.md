@@ -61,6 +61,11 @@ Implement in testable batches:
   - Decibel conversions explicitly distinguish amplitude (20 log10) and power (10 log10) ratios.
   - Voltage gain uses 20 log10(Vout/Vin); it does not imply a specific amplifier load or power.
 - Batch 2: signal/noise/test generators.
+  - Signal generator uses Web Audio oscillators (sine, square, sawtooth, triangle) with a 20 Hz–20 kHz range and adjustable output level.
+  - Pink and white noise use short in-memory audio buffers with looping playback; no file upload or network request.
+  - Frequency sweep uses a sine oscillator with a logarithmic frequency ramp and bounded duration.
+  - Test tone presets default to 1 kHz at -20 dBFS, with 100 Hz and 10 kHz options; output level remains adjustable down to -60 dBFS and up to 0 dBFS.
+  - Every generator requires an explicit Start action, exposes Stop, and closes its AudioContext on stop/unmount/end. No generator starts automatically.
 - Batch 3: audio input, metering, spectrum, phase, and feedback-analysis tools.
 
 Every tool requires a short tool spec, unit/input validation, meaningful empty/error states, tests, and documented limitations.
