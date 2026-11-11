@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { ToolPanel } from "../../components/ToolPanel";
 import "./audio-file-player.css";
 
@@ -32,7 +32,7 @@ export function AudioFilePlayer() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.currentTarget.files?.[0] ?? null;
     event.currentTarget.value = "";
     if (!selected) return;
@@ -56,7 +56,7 @@ export function AudioFilePlayer() {
   }
 
   return (
-    <section className="audio-player-section" aria-labelledby="audio-player-title">
+    <section className="audio-player-section">
       <ToolPanel
         title="Audio file player"
         description="Play a local reference track or multitrack stem directly in your browser."
