@@ -92,6 +92,7 @@ function createBrowserAudioRuntime(): AudioRuntime {
  */
 export async function startMicrophoneSession(
   runtime?: AudioRuntime,
+  constraints: MediaStreamConstraints = { audio: true },
 ): Promise<MicrophoneSession> {
   const audioRuntime = runtime ?? createBrowserAudioRuntime();
   let stream: MediaStream | undefined;
@@ -101,7 +102,16 @@ export async function startMicrophoneSession(
     // Construct the context before the first await so a click handler can
     // satisfy browsers that gate Web Audio startup on user activation.
     context = audioRuntime.createAudioContext();
-    stream = await audioRuntime.getUserMedia({ audio: true });
+    const streamPromise = audioRuntime.getUserMedia(constraints).then((acquired) => {
+      stream = acquired;
+      return acquired;
+    });
+    const resumeResult = context.state === "suspended"
+      ? context.resume().then(() => null, (error: unknown) => error)
+      : Promise.resolve(null);
+    stream = await streamPromise;
+    const resumeError = await resumeResult;
+    if (resumeError) throw resumeError;
     const source = context.createMediaStreamSource(stream);
     let stopped = false;
 
