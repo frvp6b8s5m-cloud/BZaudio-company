@@ -202,7 +202,7 @@ test("keeps small technical text above WCAG AA contrast on its intended surfaces
   await page.goto("/");
   const contrast = await page.evaluate(() => {
     const luminance = (color: string) => {
-      const channels = color.match(/[\\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+      const channels = color.slice(color.indexOf("(") + 1, color.lastIndexOf(")")).split(",").map(Number);
       const linear = channels.map((channel) => {
         const value = channel / 255;
         return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
