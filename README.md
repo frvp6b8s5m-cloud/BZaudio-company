@@ -31,8 +31,9 @@ Generators start only after an explicit user action, default to -20 dBFS, provid
 - Real-time analyzer (nominal 1/3-octave bands)
 - Feedback frequency finder (narrow spectral peak candidates)
 - LUFS loudness meter (mono BS.1770-5 integrated loudness with gating)
+- Phase/polarity analyzer (stereo channel correlation and phase difference at the dominant frequency)
 
-Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. Feedback candidates are not proof of acoustic feedback. The LUFS meter implements mono integrated loudness only; it does not report true peak (dBTP) or stereo channel weighting. The remaining Release 1 tools are still in development.
+Live analyzers request microphone access only after you press Start, share one capture session, and stop/close the input resources when stopped. Readings depend on the microphone, interface, input gain, and browser processing. They are dBFS/spectral estimates, not calibrated SPL. Feedback candidates are not proof of acoustic feedback. The LUFS meter implements mono integrated loudness only; it does not report true peak (dBTP) or stereo channel weighting. Phase/polarity comparison requires a two-channel input; it compares channel A with channel B and is not a substitute for acoustic loudspeaker alignment. The remaining Release 1 tools are still in development.
 
 ## Development
 

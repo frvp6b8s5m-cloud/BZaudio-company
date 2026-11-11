@@ -19,7 +19,7 @@ const toolGroups = [
     number: "01",
     title: "Analyze",
     description: "See what your system is doing, from spectrum and level to phase and feedback.",
-    tools: "RTA · FFT · Frequency · LUFS · Peak / RMS · Feedback",
+    tools: "RTA · FFT · Frequency · LUFS · Peak / RMS · Feedback · Phase",
     status: "PARTIALLY AVAILABLE",
   },
   {
