@@ -220,3 +220,97 @@ export function calculateRtaBands(
     };
   });
 }
+
+
+export interface FeedbackCandidate {
+  frequencyHz: number;
+  levelDbfs: number;
+  prominenceDb: number;
+}
+
+/**
+ * Ranks narrow spectral peaks as possible feedback candidates.
+ * This identifies resonant peaks; it does not prove acoustic feedback.
+ */
+export function findFeedbackCandidates(
+  frequencyDbfs: ArrayLike<number>,
+  sampleRate: number,
+  fftSize: number,
+  options: {
+    minFrequencyHz?: number;
+    maxFrequencyHz?: number;
+    minLevelDbfs?: number;
+    minProminenceDb?: number;
+    maxCandidates?: number;
+  } = {},
+): FeedbackCandidate[] {
+  validateSpectrumDimensions(sampleRate, fftSize, frequencyDbfs.length);
+  const {
+    minFrequencyHz = 100,
+    maxFrequencyHz = 12_000,
+    minLevelDbfs = -60,
+    minProminenceDb = 6,
+    maxCandidates = 5,
+  } = options;
+
+  if (
+    !Number.isFinite(minFrequencyHz) ||
+    !Number.isFinite(maxFrequencyHz) ||
+    minFrequencyHz <= 0 ||
+    maxFrequencyHz <= minFrequencyHz ||
+    !Number.isFinite(minLevelDbfs) ||
+    !Number.isFinite(minProminenceDb) ||
+    minProminenceDb < 0 ||
+    !Number.isSafeInteger(maxCandidates) ||
+    maxCandidates <= 0
+  ) {
+    throw new RangeError("Feedback search limits must be valid finite values.");
+  }
+
+  const resolutionHz = sampleRate / fftSize;
+  const firstBin = Math.max(2, Math.ceil(minFrequencyHz / resolutionHz));
+  const lastBin = Math.min(
+    frequencyDbfs.length - 3,
+    Math.floor(Math.min(maxFrequencyHz, sampleRate / 2) / resolutionHz),
+  );
+  const candidates: FeedbackCandidate[] = [];
+
+  for (let bin = firstBin; bin <= lastBin; bin += 1) {
+    const level = frequencyDbfs[bin];
+    const left = frequencyDbfs[bin - 1];
+    const right = frequencyDbfs[bin + 1];
+    if (
+      !Number.isFinite(level) ||
+      !Number.isFinite(left) ||
+      !Number.isFinite(right) ||
+      level < minLevelDbfs ||
+      level < left ||
+      level < right ||
+      (level === left && level === right)
+    ) {
+      continue;
+    }
+
+    const nearby = [frequencyDbfs[bin - 2], left, right, frequencyDbfs[bin + 2]]
+      .filter(Number.isFinite);
+    if (nearby.length === 0) continue;
+    const baseline = nearby.reduce((sum, value) => sum + value, 0) / nearby.length;
+    const prominenceDb = level - baseline;
+    if (prominenceDb < minProminenceDb) continue;
+
+    const denominator = left - 2 * level + right;
+    const offset = denominator === 0
+      ? 0
+      : Math.max(-0.5, Math.min(0.5, 0.5 * (left - right) / denominator));
+
+    candidates.push({
+      frequencyHz: (bin + offset) * resolutionHz,
+      levelDbfs: level,
+      prominenceDb,
+    });
+  }
+
+  return candidates
+    .sort((first, second) => second.prominenceDb - first.prominenceDb)
+    .slice(0, maxCandidates);
+}

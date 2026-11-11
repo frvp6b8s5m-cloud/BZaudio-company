@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   calculatePeakRms,
+  findFeedbackCandidates,
   calculateRtaBands,
   estimateDominantFrequency,
   mapSpectrumToLogBins,
@@ -77,6 +78,27 @@ describe("FFT spectrum analysis", () => {
     expect(mapped).toHaveLength(64);
     expect(mapped.every((value) => value >= 0 && value <= 1)).toBe(true);
     expect(Math.max(...mapped)).toBeGreaterThan(0.79);
+  });
+
+  it("finds narrow spectral peaks as feedback candidates", () => {
+    const values = new Float32Array(fftSize / 2).fill(-90);
+    values[400] = -24;
+    values[399] = -42;
+    values[401] = -45;
+    values[398] = -48;
+    values[402] = -50;
+    values[700] = -35;
+    values[699] = -37;
+    values[701] = -38;
+    const candidates = findFeedbackCandidates(values, sampleRate, fftSize);
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0].frequencyHz).toBeCloseTo(400 * sampleRate / fftSize, 0);
+    expect(candidates[0].prominenceDb).toBeGreaterThan(6);
+  });
+
+  it("returns no feedback candidates for a flat or silent spectrum", () => {
+    const values = new Float32Array(fftSize / 2).fill(-Infinity);
+    expect(findFeedbackCandidates(values, sampleRate, fftSize)).toEqual([]);
   });
 
   it("aggregates FFT-bin power into nominal one-third-octave bands", () => {
