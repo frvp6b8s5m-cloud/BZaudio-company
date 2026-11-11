@@ -47,3 +47,24 @@ test("primary navigation reaches the toolbox section", async ({ page }) => {
     page.getByRole("heading", { name: /Everything starts with a better read/ }),
   ).toBeVisible();
 });
+
+
+test("calculator suite renders and updates a live speaker-delay result", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#toolbox");
+
+  await expect(
+    page.getByRole("heading", { name: "Engineering tools, ready to use." }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Speaker delay" })).toBeVisible();
+
+  const distance = page.getByLabel("Distance (m)");
+  await distance.fill("20");
+  await expect(page.getByText("58.24 ms")).toBeVisible();
+
+  const dimensions = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+  }));
+  expect(dimensions.document).toBeLessThanOrEqual(dimensions.viewport);
+});
