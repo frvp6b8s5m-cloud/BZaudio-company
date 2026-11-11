@@ -25,6 +25,7 @@ function createFakeRuntime(): {
   bufferSource: AudioBufferSourceNode;
   gain: GainNode;
   buffer: AudioBuffer;
+  setValueCurveAtTime: ReturnType<typeof vi.fn>;
 } {
   const setValueCurveAtTime = vi.fn();
   const oscillator = {
