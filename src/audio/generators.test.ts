@@ -187,11 +187,11 @@ describe("Web Audio output sessions", () => {
     expect(fake.context.close).toHaveBeenCalledOnce();
   });
 
-  it("rejects invalid sweep duration and reversed frequency limits", async () => {
+  it("rejects equal sweep limits and invalid duration", async () => {
     const fake = createFakeRuntime();
     await expect(
       startSweepSession(
-        { startFrequencyHz: 100, endFrequencyHz: 50, durationSeconds: 5, levelDbfs: -20 },
+        { startFrequencyHz: 100, endFrequencyHz: 100, durationSeconds: 5, levelDbfs: -20 },
         fake.runtime,
       ),
     ).rejects.toThrow(RangeError);
