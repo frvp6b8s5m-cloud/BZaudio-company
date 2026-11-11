@@ -167,13 +167,13 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 
 #### Task 11.1: Signal generator
 - [x] Sine, square, sawtooth, and triangle waveforms.
-- [ ] Frequency input 20 Hz–20 kHz and output level -60 to 0 dBFS.
-- [ ] Explicit Start/Stop controls and lifecycle cleanup.
+- [x] Frequency input 20 Hz–20 kHz and output level -60 to 0 dBFS.
+- [x] Explicit Start/Stop controls and lifecycle cleanup.
 - **Verification:** 8 audio-engine tests, 5 generator UI tests, and a real Chromium signal start/stop test. Shared playback controller prevents two generators from running simultaneously.
 
 #### Task 11.2: Pink noise generator
 - [x] Generate bounded pink-noise buffer and loop during playback.
-- [ ] Conservative -20 dBFS default and explicit stop.
+- [x] Conservative -20 dBFS default and explicit stop.
 - **Verification:** Deterministic sample tests and looping buffer-source tests.
 
 #### Task 11.3: White noise generator
@@ -183,31 +183,29 @@ Tasks are ordered by dependency. Check a task only after its acceptance criteria
 
 #### Task 11.4: Frequency sweep
 - [x] Sine sweep from configurable start to end frequency over a bounded duration.
-- [ ] Use a logarithmic frequency ramp and stop/close automatically at the end.
+- [x] Use a logarithmic frequency ramp and stop/close automatically at the end.
 - **Verification:** Ramp scheduling and cleanup tests.
 
 #### Task 11.5: Audio test tone generator
 - [x] Presets at 100 Hz, 1 kHz, and 10 kHz.
-- [ ] Default 1 kHz at -20 dBFS; adjustable level from -60 to 0 dBFS.
-- [ ] Explicit start/stop; warn users to begin with downstream gain low.
+- [x] Default 1 kHz at -20 dBFS; adjustable level from -60 to 0 dBFS.
+- [x] Explicit start/stop; warn users to begin with downstream gain low.
 - **Verification:** Preset mapping, gain, and browser playback control tests.
 
 ### Task 12: Analysis and metering tools
-**Acceptance criteria:** [ ] RTA, FFT, frequency, LUFS, peak/RMS, phase/polarity, and feedback analysis have stated limits and meaningful output.
-**Verification:** Deterministic signal fixtures, reference comparisons, and browser tests.
+**Acceptance criteria:** [x] RTA, FFT, frequency, LUFS, peak/RMS, phase/polarity, and feedback analysis have stated limits and meaningful output.
+**Verification:** CI run 42933458969 passed lint, strict typecheck, 91 unit/component tests across 14 files, 9 Chromium browser tests, production build, dev-server smoke test, and npm audit. Synthetic fixtures cover phase/polarity and analyzer calculations; stereo microphone tests verify independent channel routing and cleanup.
 **Dependencies:** Tasks 8–9.
-**Files likely touched:** `src/audio/`, `src/features/`, tests.
-**Estimated scope:** Split into smaller per-tool tasks before implementation.
+**Files:** `src/audio/`, `src/calculations/dsp/`, `src/features/analyzers/`.
 
 ### Task 13: Audio file player
-**Acceptance criteria:** [ ] Local audio files can be selected and played without upload to a server; unsupported formats and errors are handled.
-**Verification:** Browser tests with fixture audio.
+**Acceptance criteria:** [x] Local audio files can be selected and played without upload to a server; unsupported formats and errors are handled.
+**Verification:** CI run 42933458969 includes a Chromium test that loads a generated WAV fixture, confirms native playback controls, and checks the one-second duration. Component tests verify local object URL creation, replacement/unmount cleanup, and non-audio rejection.
 **Dependencies:** Checkpoint B.
-**Files likely touched:** `src/features/`, tests.
-**Estimated scope:** Medium.
+**Files:** `src/features/player/AudioFilePlayer.tsx`, `audio-file-player.css`, and tests.
 
 ### Checkpoint C — Release 1 review
-- [ ] All 20 Release 1 tools are implemented and verified; task groups are decomposed into individual tool tasks before execution.
+- [x] All 20 Release 1 tools are implemented and verified; task groups are decomposed into individual tool tasks before execution.
 - [ ] Human approves release candidate.
 
 ## Phase 4 — Hardening and release

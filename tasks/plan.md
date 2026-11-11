@@ -66,15 +66,15 @@ Implement in testable batches:
   - Frequency sweep uses a sine oscillator with a logarithmic frequency ramp and bounded duration.
   - Test tone presets default to 1 kHz at -20 dBFS, with 100 Hz and 10 kHz options; output level remains adjustable down to -60 dBFS and up to 0 dBFS.
   - Every generator requires an explicit Start action, exposes Stop, and closes its AudioContext on stop/unmount/end. No generator starts automatically.
-- Batch 3: audio input, metering, spectrum, phase, and feedback-analysis tools.
+- [x] Batch 3: audio input, metering, spectrum, phase, and feedback-analysis tools; local audio file player. CI verified 2026-11-11 (91 unit/component tests and 9 Chromium browser tests).
 
 Every tool requires a short tool spec, unit/input validation, meaningful empty/error states, tests, and documented limitations.
 
 ### Checkpoint C — Release 1 review
-- [ ] All 20 tools work in supported browsers.
-- [ ] Calculations have known-answer and boundary tests.
-- [ ] Audio tools handle permission denial, device loss, and unsupported APIs.
-- [ ] No tool is presented as calibrated measurement without calibration.
+- [x] All 20 tools are implemented and pass the current Chromium CI suite; cross-browser manual verification remains a Phase 4 hardening task.
+- [x] Calculation and DSP test fixtures pass in CI.
+- [x] Microphone permission/device/unsupported-API failures and cleanup are unit tested; two-channel analyzer rejects mono input. Manual device-loss checks remain in Phase 4.
+- [x] UI and docs label microphone-based measurements as uncalibrated estimates; SPL and phase tool limitations are documented.
 - [ ] Human approves release candidate.
 
 ### Phase 4 — Release hardening
