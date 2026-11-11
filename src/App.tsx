@@ -1,4 +1,5 @@
 import { CalculatorSuite } from "./features/calculators/CalculatorSuite";
+import { SignalTools } from "./features/generators/SignalTools";
 import {
   Activity,
   ArrowDownRight,
@@ -33,8 +34,8 @@ const toolGroups = [
     number: "03",
     title: "Generate",
     description: "Create the signals you need for checking, testing, and tuning an audio system.",
-    tools: "Pink noise · Test tones · Sweeps",
-    status: "IN DEVELOPMENT",
+    tools: "Signal · Pink / White noise · Sweeps · Test tones",
+    status: "PARTIALLY AVAILABLE",
   },
   {
     icon: Calculator,
@@ -186,6 +187,7 @@ export default function App() {
             })}
           </div>
           <CalculatorSuite />
+          <SignalTools />
           <div className="toolbox-note">
             <Gauge size={18} />
             <p><strong>Built for accuracy, not guesswork.</strong> Calculations will show their units, formulas, assumptions, and limitations.</p>
