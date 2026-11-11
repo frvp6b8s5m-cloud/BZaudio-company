@@ -1,10 +1,10 @@
-name: GitHub Pages
+name: Deploy BZaudio to GitHub Pages
 
 on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Explicitly authorize publishing the built site to GitHub Pages
+        description: Explicitly authorize publishing the built site to production Pages
         required: true
         default: false
         type: boolean
@@ -22,9 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pages: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -35,8 +40,15 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
 
-      - name: Build static site
-        run: npm run build
+      - name: Build static site for its Pages base path
+        run: npm run build -- --base "${{ steps.pages.outputs.base_path }}/"
+
+      - name: Verify built entry point and assets
+        run: |
+          test -s dist/index.html
+          grep -Eq 'src="[^"]+\.js"' dist/index.html
+          test -d dist/assets
+          find dist/assets -maxdepth 1 -type f | grep -Eq '\.(js|css)$'
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
