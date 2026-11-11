@@ -17,7 +17,7 @@ function makeSession() {
   frequencyDbfs[341] = -9;
   return {
     analyser: {} as AnalyserNode,
-    microphone: {} as never,
+    microphone: { context: { sampleRate: 48_000 } } as never,
     startedAtContextTime: 0,
     read: vi.fn(() => ({
       sampleRate: 48_000,
