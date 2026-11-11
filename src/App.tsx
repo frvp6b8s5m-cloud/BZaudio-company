@@ -172,7 +172,7 @@ export default function App() {
               );
             })}
           </div>
-          <div className="toolbox-note">
+          <CalculatorSuite />\n          <div className="toolbox-note">
             <Gauge size={18} />
             <p><strong>Built for accuracy, not guesswork.</strong> Calculations will show their units, formulas, assumptions, and limitations.</p>
           </div>
