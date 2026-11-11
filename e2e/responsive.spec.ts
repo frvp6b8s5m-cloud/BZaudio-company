@@ -68,3 +68,16 @@ test("calculator suite renders and updates a live speaker-delay result", async (
   }));
   expect(dimensions.document).toBeLessThanOrEqual(dimensions.viewport);
 });
+
+
+test("signal generator starts and stops in the browser", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#toolbox");
+
+  const panel = page.getByRole("region", { name: "Signal generator" });
+  await expect(panel).toBeVisible();
+  await panel.getByRole("button", { name: "Start signal" }).click();
+  await expect(panel.getByText("Playing")).toBeVisible();
+  await panel.getByRole("button", { name: "Stop signal" }).click();
+  await expect(panel.getByText("Stopped")).toBeVisible();
+});

@@ -41,7 +41,7 @@ describe("Release 1 signal generators", () => {
     }
 
     expect(screen.getByLabelText("Frequency")).toHaveValue(1000);
-    expect(screen.getByLabelText("Output level").length).toBeGreaterThan(0);
+    expect(screen.getAllByLabelText("Output level")).toHaveLength(5);
     expect(screen.getByLabelText("Test tone frequency")).toHaveValue("1000");
     expect(screen.getByRole("button", { name: "Start signal" })).toBeEnabled();
   });

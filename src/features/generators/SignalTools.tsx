@@ -38,7 +38,9 @@ function useAudioPlayback() {
   }
 
   async function start(createSession: () => Promise<AudioOutputSession>) {
-    await stop();
+    if (sessionRef.current) {
+      await stop();
+    }
     setError("");
     setStatus("starting");
     try {
