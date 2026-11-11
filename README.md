@@ -72,7 +72,7 @@ The browser suite checks desktop, tablet, mobile, and minimum-width mobile layou
 - Deterministic calculation and DSP primitives are kept independently testable.
 - GitHub Actions runs lint, type checks, unit tests, browser tests, production build, server smoke test, and dependency audit.
 - Static HTML includes a restrictive Content Security Policy and strict referrer policy; all app assets are same-origin and local audio playback uses temporary blob URLs.
-- One-time GitHub setup: open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**. The Pages workflow then reads the configured site base path, builds the Vite production output for that path, verifies the generated entry point/assets, and publishes the `dist` directory after changes reach `main`. It can also be started manually from Actions. The deploy job is restricted to the public repository's `main` branch.
+- One-time GitHub setup: open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**. Production publishing remains manual and separately gated: run **Deploy BZaudio to GitHub Pages** from Actions on `main` and set its `publish` approval input to `true`. The workflow reads the configured site base path, builds the Vite production output for that path, verifies the generated entry point/assets, and publishes the `dist` directory. Ordinary CI and pushes do not publish production.
 
 ## Project administration
 
