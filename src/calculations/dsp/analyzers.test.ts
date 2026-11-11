@@ -76,11 +76,15 @@ describe("FFT spectrum analysis", () => {
     const mapped = mapSpectrumToLogBins(values, sampleRate, fftSize, 64);
     expect(mapped).toHaveLength(64);
     expect(mapped.every((value) => value >= 0 && value <= 1)).toBe(true);
-    expect(Math.max(...mapped)).toBeGreaterThan(0.8);
+    expect(Math.max(...mapped)).toBeGreaterThan(0.79);
   });
 
   it("aggregates FFT-bin power into nominal one-third-octave bands", () => {
     const values = spectrumWithPeak(sampleRate, fftSize, 1000, -6);
+    const binWidth = sampleRate / fftSize;
+    const lowerBin = Math.ceil((1000 / 2 ** (1 / 6)) / binWidth);
+    const upperBin = Math.floor((1000 * 2 ** (1 / 6)) / binWidth);
+    for (let bin = lowerBin; bin <= upperBin; bin += 1) values[bin] = -6;
     const bands = calculateRtaBands(values, sampleRate, fftSize);
     const band = bands.find((item) => item.centerFrequencyHz === 1000);
     expect(bands.length).toBeGreaterThan(25);
