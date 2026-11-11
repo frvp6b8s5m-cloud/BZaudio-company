@@ -62,6 +62,7 @@ describe("Release 1 signal generators", () => {
         levelDbfs: -20,
       });
       expect(within(signalPanel).getByText("Playing")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Start pink noise" })).toBeDisabled();
     });
 
     fireEvent.click(within(signalPanel).getByRole("button", { name: "Stop signal" }));
