@@ -26,9 +26,10 @@ Tasks are ordered by dependency. Do not mark a task complete until its acceptanc
 
 ## Phase 1 — Shared navigation and route foundation
 ### Task 1.1: Define information architecture
-- [ ] Add Shop and PROJECT: ORIGIN entry points without disrupting Toolbox, Approach, About, or Admin.
+- [ ] Add Shop and a separate, clearly labeled PROJECT: ORIGIN link to the global header, alongside Shop, without disrupting Toolbox, Approach, About, or Admin.
+- [ ] Ensure the PROJECT: ORIGIN header link remains directly visible/accessible in the mobile navigation and is not buried in a submenu.
 - [ ] Define route and navigation behavior compatible with GitHub Pages.
-- Acceptance: all primary routes have clear navigation and working deep-link behavior.
+- Acceptance: all primary routes have clear navigation and working deep-link behavior; PROJECT: ORIGIN is one click away from the global header on desktop and mobile.
 
 ### Task 1.2: Establish shared page components
 - [ ] Reuse existing design tokens and component conventions.
