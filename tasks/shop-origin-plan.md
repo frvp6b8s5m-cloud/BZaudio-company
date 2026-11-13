@@ -27,7 +27,8 @@ Extend the existing BZaudio React + TypeScript + Vite static site with two indep
 ## Capability map and delivery order
 
 ### Workstream A — Shared navigation and information architecture
-- Define primary navigation for Toolbox, Shop, PROJECT: ORIGIN, About, and contact/quote entry points.
+- Add PROJECT: ORIGIN as its own clearly labeled, clickable item in the global website header, alongside Shop. It must be directly accessible from the header on desktop and mobile, not hidden in a submenu or only reachable by typing the route.
+- Define primary navigation for Toolbox, Shop, PROJECT: ORIGIN, About, and contact/quote entry points. Keep the header clean and easy to scan.
 - Preserve existing toolbox navigation and all current tool behavior.
 - Ensure new routes work with GitHub Pages base-path and deep-link constraints.
 
